@@ -5,8 +5,8 @@ modern Linux systemds: notify, status, watchdog.
 
 * Notify systemd when puma has booted and is [ready to handle requests][ready]
 * Publish puma stats as systemd [service status][status] for a quick overview
-* Use the [watchdog][systemd-watchdog] to make sure your puma processes are
-  healthy and haven't locked up or run out of memory
+* Use the [watchdog][watchdog] to make sure your puma processes are healthy
+  and haven't locked up or run out of memory
 
 Puma already natively supports [socket activation][socket-activation].
 
