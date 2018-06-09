@@ -1,9 +1,8 @@
 # coding: utf-8, frozen_string_literal: true
 
 require "json"
+require "puma"
 require "puma/plugin"
-
-require_relative "systemd/version"
 
 # Puma systemd plugin
 #
