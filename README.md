@@ -48,6 +48,20 @@ STATSD_HOST=127.0.0.1 bundle exec puma
 Bug reports and pull requests are welcome on GitHub at
 https://github.com/yob/puma-plugin-statsd.
 
+## Acknowledgements
+
+This gem is a fork of the excellent [puma-plugin-statsd][puma-plugin-statsd] by
+Sam Cochran.
+
+  [puma-plugin-statsd]: https://github.com/sj26/puma-plugin-systemd
+
+Other puma plugins that were helpful references:
+
+* [puma-heroku](https://github.com/evanphx/puma-heroku)
+* [tmp-restart](https://github.com/puma/puma/blob/master/lib/puma/plugin/tmp_restart.rb)
+
+The [puma docs](https://github.com/puma/puma/blob/master/docs/plugins.md) were also helpful.
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License][license].
