@@ -41,7 +41,9 @@ plugin :statsd
 
 Ensure you have an environment variable set that points to a statsd host, then boot your puma app as usual
 
+```
 STATSD_HOST=127.0.0.1 bundle exec puma
+```
 
 ## Contributing
 
