@@ -23,8 +23,12 @@ Puma::Plugin.create do
       !!host
     end
 
-    def send(metric_name:, value:, type:)
+    def send(metric_name:, value:, type:, tags: {})
       data = "#{metric_name}:#{value}|#{STATSD_TYPES.fetch(type)}"
+      if tags.any?
+        tag_str = tags.map { |k,v| "#{k}:#{v}" }.join(",")
+        data = "#{data}##{tag_str}"
+      end
 
       UDPSocket.new.send(data, 0, host, STATSD_PORT)
     end
@@ -113,18 +117,26 @@ Puma::Plugin.create do
     PumaStats.new(fetch_stats)
   end
 
+  def tags
+    if ENV.has_key?("MY_POD_NAME")
+      {pod_name: ENV.fetch("MY_POD_NAME", "no_pod")}
+    else
+      {}
+    end
+  end
+
   # Send data to statsd every few seconds
   def stats_loop
     sleep 5
     loop do
       @launcher.events.debug "statsd: notify statsd"
       begin
-        @statsd.send(metric_name: "puma.workers", value: stats.workers, type: :gauge)
-        @statsd.send(metric_name: "puma.booted_workers", value: stats.booted_workers, type: :gauge)
-        @statsd.send(metric_name: "puma.running", value: stats.running, type: :gauge)
-        @statsd.send(metric_name: "puma.backlog", value: stats.backlog, type: :gauge)
-        @statsd.send(metric_name: "puma.pool_capacity", value: stats.pool_capacity, type: :gauge)
-        @statsd.send(metric_name: "puma.max_threads", value: stats.max_threads, type: :gauge)
+        @statsd.send(metric_name: "puma.workers", value: stats.workers, type: :gauge, tags: tags)
+        @statsd.send(metric_name: "puma.booted_workers", value: stats.booted_workers, type: :gauge, tags: tags)
+        @statsd.send(metric_name: "puma.running", value: stats.running, type: :gauge, tags: tags)
+        @statsd.send(metric_name: "puma.backlog", value: stats.backlog, type: :gauge, tags: tags)
+        @statsd.send(metric_name: "puma.pool_capacity", value: stats.pool_capacity, type: :gauge, tags: tags)
+        @statsd.send(metric_name: "puma.max_threads", value: stats.max_threads, type: :gauge, tags: tags)
       rescue StandardError => e
         @launcher.events.error "! statsd: notify stats failed:\n  #{e.to_s}\n  #{e.backtrace.join("\n    ")}"
       ensure
