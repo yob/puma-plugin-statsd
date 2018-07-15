@@ -7,11 +7,11 @@ require "puma/plugin"
 
 
 Puma::Plugin.create do
+
   class Statsd
     ENV_NAME = "STATSD_HOST"
     STATSD_PORT = 8125
     STATSD_TYPES = { count: 'c', gauge: 'g' }
-    REPORTING_PAUSE_SECONDS = 2
 
     attr_reader :host
 
@@ -128,7 +128,7 @@ Puma::Plugin.create do
       rescue StandardError => e
         @launcher.events.error "! statsd: notify stats failed:\n  #{e.to_s}\n  #{e.backtrace.join("\n    ")}"
       ensure
-        sleep REPORTING_PAUSE_SECONDS
+        sleep 2
       end
     end
   end
