@@ -20,7 +20,7 @@ Puma::Plugin.create do
     end
 
     def enabled?
-      !host
+      !!host
     end
 
     def send(metric_name:, value:, type:)
