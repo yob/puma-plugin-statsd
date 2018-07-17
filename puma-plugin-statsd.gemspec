@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/yob/puma-plugin-statsd"
   spec.license  = "MIT"
 
-  spec.files = Dir["lib/**/*.rb", "README.md", "LICENSE"]
+  spec.files = Dir["lib/**/*.rb", "README.md", "MIT-LICENSE"]
 
   spec.add_runtime_dependency "puma", "~> 3.12"
   spec.add_runtime_dependency "json"
