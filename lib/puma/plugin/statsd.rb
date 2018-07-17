@@ -27,7 +27,7 @@ Puma::Plugin.create do
       data = "#{metric_name}:#{value}|#{STATSD_TYPES.fetch(type)}"
       if tags.any?
         tag_str = tags.map { |k,v| "#{k}:#{v}" }.join(",")
-        data = "#{data}##{tag_str}"
+        data = "#{data}|##{tag_str}"
       end
 
       UDPSocket.new.send(data, 0, host, STATSD_PORT)
