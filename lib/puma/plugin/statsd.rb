@@ -120,10 +120,10 @@ Puma::Plugin.create do
   def tags
     tags = {}
     if ENV.has_key?("MY_POD_NAME")
-      tags[:pod_name] = ENV.fetch("MY_POD_NAME", "no_pod")}
+      tags[:pod_name] = ENV.fetch("MY_POD_NAME", "no_pod")
     end
     if ENV.has_key?("STATSD_GROUPING")
-      tags[:grouping] = ENV.fetch("STATSD_GROUPING", "no-group")}
+      tags[:grouping] = ENV.fetch("STATSD_GROUPING", "no-group")
     end
     tags
   end
