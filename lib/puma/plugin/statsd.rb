@@ -118,11 +118,14 @@ Puma::Plugin.create do
   end
 
   def tags
+    tags = {}
     if ENV.has_key?("MY_POD_NAME")
-      {pod_name: ENV.fetch("MY_POD_NAME", "no_pod")}
-    else
-      {}
+      tags[:pod_name] = ENV.fetch("MY_POD_NAME", "no_pod")}
     end
+    if ENV.has_key?("STATSD_GROUPING")
+      tags[:grouping] = ENV.fetch("STATSD_GROUPING", "no-group")}
+    end
+    tags
   end
 
   # Send data to statsd every few seconds

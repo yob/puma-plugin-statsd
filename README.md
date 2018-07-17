@@ -45,15 +45,43 @@ Ensure you have an environment variable set that points to a statsd host, then b
 STATSD_HOST=127.0.0.1 bundle exec puma
 ```
 
-If the `MY_POD_NAME` environment variable is present, it will be used to append
-a `pod_name` tag to the metrics. metric tags are a non-standard addition to the
-statsd protocol, supported by the datadog "dogstatsd" server. The `MY_POD_NAME`
-environment variable is recommended in their kubernetes setup documentation,
-and for puma apps deployed to kubernetes it's very helpful to have the option
-to report on specific pods.
-
 ```
 STATSD_HOST=127.0.0.1 MY_POD_NAME=foo bundle exec puma
+```
+
+### Datadog Integration
+
+metric tags are a non-standard addition to the statsd protocol, supported by
+the datadog "dogstatsd" server.
+
+Should you be reporting the puma metrics to a dogstatsd server, you can set
+tags via the following two environment variables.
+
+`MY_POD_NAME` adds a `pod_name` tag to the metrics. The `MY_POD_NAME`
+environment variable is recommended in th datadog kubernetes setup
+documentation, and for puma apps deployed to kubernetes it's very helpful to
+have the option to report on specific pods.
+
+You can set it on your pods like this:
+
+```yaml
+env:
+  - name: MY_POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+```
+
+`STATSD_GROUPING` adds a `grouping` tag to the metrics, with a value equal to
+the environment variable value. This is particularly helpful in a kubernetes
+deployment where each pod has a unique name but you want the option to group
+metrics across all pods in a deployment. Setting this on the pods in a
+deployment might look something like:
+
+```yaml
+env:
+  - name: STATSD_GROUPING
+    value: deployment-foo
 ```
 
 ## Contributing
