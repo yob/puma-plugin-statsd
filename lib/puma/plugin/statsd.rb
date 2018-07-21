@@ -113,10 +113,6 @@ Puma::Plugin.create do
     JSON.parse(Puma.stats)
   end
 
-  def stats
-    PumaStats.new(fetch_stats)
-  end
-
   def tags
     tags = {}
     if ENV.has_key?("MY_POD_NAME")
@@ -134,6 +130,7 @@ Puma::Plugin.create do
     loop do
       @launcher.events.debug "statsd: notify statsd"
       begin
+        stats = PumaStats.new(fetch_stats)
         @statsd.send(metric_name: "puma.workers", value: stats.workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: "puma.booted_workers", value: stats.booted_workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: "puma.running", value: stats.running, type: :gauge, tags: tags)
