@@ -10,8 +10,6 @@ that puma can provide:
 * puma.pool_capacity
 * puma.max_threads
 
-Puma already natively supports [socket activation][socket-activation].
-
   [puma]: https://github.com/puma/puma
   [statsd]: https://github.com/etsy/statsd
 
@@ -91,10 +89,10 @@ https://github.com/yob/puma-plugin-statsd.
 
 ## Acknowledgements
 
-This gem is a fork of the excellent [puma-plugin-statsd][puma-plugin-statsd] by
-Sam Cochran.
+This gem is a fork of the excellent [puma-plugin-systemd][puma-plugin-systemd] by
+Samuel Cochran.
 
-  [puma-plugin-statsd]: https://github.com/sj26/puma-plugin-systemd
+  [puma-plugin-systemd]: https://github.com/sj26/puma-plugin-systemd
 
 Other puma plugins that were helpful references:
 
