@@ -10,8 +10,6 @@ that puma can provide:
 * puma.pool_capacity
 * puma.max_threads
 
-Puma already natively supports [socket activation][socket-activation].
-
   [puma]: https://github.com/puma/puma
   [statsd]: https://github.com/etsy/statsd
 
