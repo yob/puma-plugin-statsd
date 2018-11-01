@@ -37,14 +37,14 @@ plugin :statsd
 
 ## Usage
 
-Ensure you have an environment variable set that points to a statsd host, then boot your puma app as usual
+Ensure you have an environment variable set that points to a statsd host, then boot your puma app as usual.  Optionally you may specify a port (default is 8125). 
 
 ```
 STATSD_HOST=127.0.0.1 bundle exec puma
 ```
 
 ```
-STATSD_HOST=127.0.0.1 MY_POD_NAME=foo bundle exec puma
+STATSD_HOST=127.0.0.1 MY_POD_NAME=foo STATSD_PORT=9125 bundle exec puma
 ```
 
 ### Datadog Integration
