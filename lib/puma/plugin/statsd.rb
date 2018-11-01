@@ -10,13 +10,13 @@ Puma::Plugin.create do
 
   class Statsd
     ENV_NAME = "STATSD_HOST"
-    STATSD_PORT = 8125
     STATSD_TYPES = { count: 'c', gauge: 'g' }
 
-    attr_reader :host
+    attr_reader :host, :port
 
     def initialize
       @host = ENV.fetch(ENV_NAME, nil)
+      @port = ENV.fetch("STATSD_PORT", 8125)
     end
 
     def enabled?
@@ -30,7 +30,7 @@ Puma::Plugin.create do
         data = "#{data}|##{tag_str}"
       end
 
-      UDPSocket.new.send(data, 0, host, STATSD_PORT)
+      UDPSocket.new.send(data, 0, host, port)
     end
   end
 
