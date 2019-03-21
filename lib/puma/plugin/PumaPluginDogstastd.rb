@@ -9,15 +9,13 @@ module PumaPluginDogstastd
   KEY = :puma_plugin_datadog_statsd_client
 
   def activate(puma_config, datadog_statsd_client)
+    raise "'puma_config' should not be nil" if puma_config.nil?
+    raise "'datadog_statsd_client' should not be nil" if datadog_statsd_client.nil?
+
     puma_config.inject { @options[KEY] = datadog_statsd_client }
     puma_config.plugin(:PumaPluginDogstastd)
   end
   module_function :activate
-
-  def get_dogstatsd_client(puma_config)
-    puma_config.instance_variable_get(:@options)[KEY]
-  end
-  module_function :get_dogstatsd_client
 
 end
 
@@ -64,6 +62,10 @@ Puma::Plugin.create do
 
   def fetch_stats
     JSON.parse(Puma.stats)
+  end
+
+  def get_dogstatsd_client(launcher)
+    launcher.instance_variable_get(:@options)[PumaPluginDogstastd::KEY]
   end
 
 end
