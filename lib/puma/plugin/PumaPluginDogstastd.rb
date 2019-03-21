@@ -23,17 +23,18 @@ Puma::Plugin.create do
 
   def start(launcher)
     dogstatsd_client = PumaPluginDogstastd.get_dogstatsd_client(launcher)
+    raise 'PumaPluginDogstastd: Dogstatsd client not found' if dogstatsd_client.nil?
 
     clustered = launcher.send(:clustered?) # See https://github.com/puma/puma/blob/master/lib/puma/launcher.rb#L285
 
-    launcher.events.debug "PumaPluginDatadogStastd: enabled"
+    launcher.events.debug "PumaPluginDatadogStastd: enabled. Cluster mode: #{clustered}"
 
     in_background do
       sleep 5
       loop do
         launcher.events.debug 'PumaPluginDatadogStastd: notify statsd'
         begin
-          stats = fetch_stats
+          stats = JSON.parse(Puma.stats)
 
           dogstatsd_client.gauge('puma.workers', stats.fetch('workers', 1))
           dogstatsd_client.gauge('puma.booted_workers', stats.fetch('booted_workers', 1))
@@ -58,10 +59,6 @@ Puma::Plugin.create do
     else
       stats.fetch(key, 0)
     end
-  end
-
-  def fetch_stats
-    JSON.parse(Puma.stats)
   end
 
   def get_dogstatsd_client(launcher)
