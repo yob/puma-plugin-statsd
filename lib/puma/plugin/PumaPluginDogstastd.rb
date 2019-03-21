@@ -22,7 +22,7 @@ end
 Puma::Plugin.create do
 
   def start(launcher)
-    dogstatsd_client = PumaPluginDogstastd.get_dogstatsd_client(launcher)
+    dogstatsd_client = get_dogstatsd_client(launcher)
     raise 'PumaPluginDogstastd: Dogstatsd client not found' if dogstatsd_client.nil?
 
     clustered = launcher.send(:clustered?) # See https://github.com/puma/puma/blob/master/lib/puma/launcher.rb#L285
