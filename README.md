@@ -22,6 +22,7 @@ Add it to your puma config:
 
 ```ruby
 # config/puma.rb
+require 'puma/plugin/PumaPluginDogstastd'
 
 bind "http://127.0.0.1:9292"
 
