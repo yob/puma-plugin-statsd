@@ -1,11 +1,11 @@
 Gem::Specification.new do |spec|
   spec.name     = "puma-plugin-dogstatsd"
   spec.version  = "0.0.5"
-  spec.author   = "Jules Ivanic"
-  spec.email    = "jules.ivanic@gmail.com"
+  spec.author   = "Colisweb"
+  spec.email    = "job@colisweb.com"
 
   spec.summary  = "Send puma metrics to Dogstatsd via a background thread"
-  spec.homepage = "https://github.com/guizmaii/puma-plugin-statsd"
+  spec.homepage = "https://github.com/Colisweb/puma-plugin-statsd"
   spec.license  = "MIT"
 
   spec.files = Dir["lib/**/*.rb", "README.md", "MIT-LICENSE"]
