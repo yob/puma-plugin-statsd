@@ -38,12 +38,16 @@ Puma::Plugin.create do
           launcher.events.debug "PumaPluginDatadogStastd - notify stats: #{stats}"
 
           parsed_stats = JSON.parse(stats)
-          dogstatsd_client.count('puma.workers', parsed_stats.fetch('workers', 1))
-          dogstatsd_client.count('puma.booted_workers', parsed_stats.fetch('booted_workers', 1))
-          dogstatsd_client.count('puma.running', count_value_for_key(clustered, parsed_stats, 'running'))
-          dogstatsd_client.count('puma.backlog', count_value_for_key(clustered, parsed_stats, 'backlog'))
-          dogstatsd_client.count('puma.pool_capacity', count_value_for_key(clustered, parsed_stats, 'pool_capacity'))
-          dogstatsd_client.count('puma.max_threads', count_value_for_key(clustered, parsed_stats, 'max_threads'))
+
+          dogstatsd_client.batch do |s|
+            s.increment('puma.stats.sent')
+            s.count('puma.workers', parsed_stats.fetch('workers', 1))
+            s.count('puma.booted_workers', parsed_stats.fetch('booted_workers', 1))
+            s.count('puma.running', count_value_for_key(clustered, parsed_stats, 'running'))
+            s.count('puma.backlog', count_value_for_key(clustered, parsed_stats, 'backlog'))
+            s.count('puma.pool_capacity', count_value_for_key(clustered, parsed_stats, 'pool_capacity'))
+            s.count('puma.max_threads', count_value_for_key(clustered, parsed_stats, 'max_threads'))
+          end
         rescue StandardError => e
           launcher.events.error "PumaPluginDatadogStastd - notify stats failed:\n  #{e.to_s}\n  #{e.backtrace.join("\n    ")}"
         ensure
