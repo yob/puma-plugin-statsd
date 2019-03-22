@@ -38,8 +38,6 @@ Puma::Plugin.create do
           launcher.events.debug "PumaPluginDatadogStastd - notify stats: #{stats}"
 
           parsed_stats = JSON.parse(stats)
-          launcher.events.debug "PumaPluginDatadogStastd - parsed stats: #{parsed_stats}"
-
           dogstatsd_client.count('puma.workers', parsed_stats.fetch('workers', 1))
           dogstatsd_client.count('puma.booted_workers', parsed_stats.fetch('booted_workers', 1))
           dogstatsd_client.count('puma.running', count_value_for_key(clustered, parsed_stats, 'running'))
