@@ -99,7 +99,7 @@ Puma::Plugin.create do
       @launcher.events.debug "statsd: enabled (host: #{@statsd.host})"
       register_hooks
     else
-      @launcher.events.debug "statsd: not enabled (no #{Statsd::ENV_NAME} env var found)"
+      @launcher.events.debug "statsd: not enabled (no #{StatsdConnector::ENV_NAME} env var found)"
     end
   end
 
