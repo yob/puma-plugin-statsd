@@ -44,7 +44,7 @@ STATSD_HOST=127.0.0.1 bundle exec puma
 ```
 
 ```
-STATSD_HOST=127.0.0.1 MY_POD_NAME=foo STATSD_PORT=9125 bundle exec puma
+STATSD_HOST=127.0.0.1 STATSD_PORT=9125 bundle exec puma
 ```
 
 ### Datadog Integration
@@ -56,7 +56,7 @@ Should you be reporting the puma metrics to a dogstatsd server, you can set
 tags via the following two environment variables.
 
 `MY_POD_NAME` adds a `pod_name` tag to the metrics. The `MY_POD_NAME`
-environment variable is recommended in th datadog kubernetes setup
+environment variable is recommended in the datadog kubernetes setup
 documentation, and for puma apps deployed to kubernetes it's very helpful to
 have the option to report on specific pods.
 
