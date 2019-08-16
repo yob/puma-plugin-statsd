@@ -26,10 +26,16 @@ class StatsdConnector
       data = "#{data}|##{tag_str}"
     end
 
-    socket = UDPSocket.new
+    socket = udp_socket
     socket.send(data, 0, host, port)
   ensure
     socket.close
+  end
+
+  private
+
+  def udp_socket
+    UDPSocket.new
   end
 end
 
