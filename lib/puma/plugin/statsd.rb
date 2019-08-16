@@ -26,11 +26,17 @@ class StatsdConnector
       socket.connect(Socket.pack_sockaddr_un(@socket_path))
       socket.sendmsg_nonblock(data)
     else
-      socket = UDPSocket.new
+      socket = udp_socket
       socket.send(data, 0, host, port)
     end
   ensure
     socket.close
+  end
+
+  private
+
+  def udp_socket
+    UDPSocket.new
   end
 end
 
