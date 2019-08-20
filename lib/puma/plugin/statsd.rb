@@ -4,6 +4,27 @@ require "puma"
 require "puma/plugin"
 require 'socket'
 
+module PumaStatsd
+
+  def self.config
+    @config ||= OpenStruct.new({
+      statsd_host: ENV.fetch('STATSD_HOST', '127.0.0.1'),
+      statsd_port: ENV.fetch('STATSD_PORT','8125'),
+      pod_name: ENV.fetch('MY_POD_NAME', nil),
+      statsd_grouping: ENV.fetch('STATSD_GROUPING', nil)
+    })
+  end
+
+  def self.configure
+    yield config
+  end
+
+  def self.reset_config
+    @config = nil
+  end
+
+end
+
 class StatsdConnector
   ENV_NAME = "STATSD_HOST"
   STATSD_TYPES = { count: 'c', gauge: 'g' }
