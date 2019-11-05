@@ -5,7 +5,6 @@ require "puma/plugin"
 require 'socket'
 
 module PumaStatsd
-
   def self.config
     @config ||= OpenStruct.new({
       statsd_host: ENV.fetch('STATSD_HOST', '127.0.0.1'),
@@ -22,7 +21,6 @@ module PumaStatsd
   def self.reset_config
     @config = nil
   end
-
 end
 
 class StatsdConnector
@@ -141,14 +139,12 @@ Puma::Plugin.create do
   end
 
   def tags
-    tags = {}
-    if ENV.has_key?("MY_POD_NAME")
-      tags[:pod_name] = ENV.fetch("MY_POD_NAME", "no_pod")
+    @tags ||= begin
+      tags = {}
+      tags[:pod_name] = PumaStatsd.config.pod_name if PumaStatsd.config.pod_name
+      tags[:grouping] = PumaStatsd.config.statsd_grouping if PumaStatsd.config.statsd_grouping
+      tags
     end
-    if ENV.has_key?("STATSD_GROUPING")
-      tags[:grouping] = ENV.fetch("STATSD_GROUPING", "no-group")
-    end
-    tags
   end
 
   # Send data to statsd every few seconds
