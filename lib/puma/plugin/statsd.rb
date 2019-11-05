@@ -5,7 +5,6 @@ require "puma/plugin"
 require 'socket'
 
 module PumaStatsd
-
   def self.config
     @config ||= OpenStruct.new({
       statsd_host: ENV.fetch('STATSD_HOST', '127.0.0.1'),
@@ -22,7 +21,6 @@ module PumaStatsd
   def self.reset_config
     @config = nil
   end
-
 end
 
 class StatsdConnector
@@ -162,12 +160,12 @@ Puma::Plugin.create do
     #
     tags = []
 
-    if ENV.has_key?("MY_POD_NAME")
-      tags << "pod_name:#{ENV['MY_POD_NAME']}"
+    if PumaStatsd.config.pod_name
+      tags << "pod_name:#{PumaStatsd.config.pod_name}"
     end
 
-    if ENV.has_key?("STATSD_GROUPING")
-      tags << "grouping:#{ENV['STATSD_GROUPING']}"
+    if PumaStatsd.config.statsd_grouping
+      tags << "grouping:#{PumaStatsd.config.statsd_grouping}"
     end
 
     # Standardised datadog tag attributes, so that we can share the metric

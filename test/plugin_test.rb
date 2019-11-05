@@ -18,7 +18,17 @@ class PluginTest < Minitest::Test
     assert_equal 'sample_grouping', tags[:grouping]
   end
 
+  def test_tags_from_config
+    PumaStatsd.config.pod_name = 'sample_pod'
+    PumaStatsd.config.statsd_grouping = 'sample_grouping'
+    tags = plugin.send(:tags)
+
+    assert_equal 'sample_pod', tags[:pod_name]
+    assert_equal 'sample_grouping', tags[:grouping]
+  end
+
   def teardown
+    PumaStatsd.reset_config
     %w[STATSD_HOST STATSD_PORT MY_POD_NAME STATSD_GROUPING].each {|var| ENV.delete var }
   end
 
