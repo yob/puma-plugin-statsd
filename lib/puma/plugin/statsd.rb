@@ -160,12 +160,12 @@ Puma::Plugin.create do
     #
     tags = []
 
-    if PumaStatsd.config.pod_name
-      tags << "pod_name:#{PumaStatsd.config.pod_name}"
+    if ::PumaStatsd.config.pod_name
+      tags << "pod_name:#{::PumaStatsd.config.pod_name}"
     end
 
-    if PumaStatsd.config.statsd_grouping
-      tags << "grouping:#{PumaStatsd.config.statsd_grouping}"
+    if ::PumaStatsd.config.statsd_grouping
+      tags << "grouping:#{::PumaStatsd.config.statsd_grouping}"
     end
 
     # Standardised datadog tag attributes, so that we can share the metric
