@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ConfigTest < MiniTest::Unit::TestCase
+class ConfigTest < MiniTest::Test
   def setup
     # Do nothing
   end

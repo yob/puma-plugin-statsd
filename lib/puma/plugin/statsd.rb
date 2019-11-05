@@ -141,8 +141,8 @@ Puma::Plugin.create do
   def tags
     @tags ||= begin
       tags = {}
-      tags[:pod_name] = PumaStatsd.config.pod_name if PumaStatsd.config.pod_name
-      tags[:grouping] = PumaStatsd.config.statsd_grouping if PumaStatsd.config.statsd_grouping
+      tags[:pod_name] = ::PumaStatsd.config.pod_name if ::PumaStatsd.config.pod_name
+      tags[:grouping] = ::PumaStatsd.config.statsd_grouping if ::PumaStatsd.config.statsd_grouping
       tags
     end
   end
