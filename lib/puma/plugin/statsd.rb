@@ -7,8 +7,8 @@ require 'socket'
 module PumaStatsd
   def self.config
     @config ||= OpenStruct.new({
-      statsd_host: ENV.fetch('STATSD_HOST', '127.0.0.1'),
-      statsd_port: ENV.fetch('STATSD_PORT','8125'),
+      statsd_host: ENV.fetch('STATSD_HOST', nil),
+      statsd_port: ENV.fetch('STATSD_PORT', 8125),
       pod_name: ENV.fetch('MY_POD_NAME', nil),
       statsd_grouping: ENV.fetch('STATSD_GROUPING', nil)
     })
@@ -24,15 +24,14 @@ module PumaStatsd
 end
 
 class StatsdConnector
-  ENV_NAME = "STATSD_HOST"
   STATSD_TYPES = { count: 'c', gauge: 'g' }
   METRIC_DELIMETER = "."
 
   attr_reader :host, :port
 
   def initialize
-    @host = ENV.fetch(ENV_NAME, "127.0.0.1")
-    @port = ENV.fetch("STATSD_PORT", 8125)
+    @host = ::PumaStatsd.config.statsd_host
+    @port = ::PumaStatsd.config.statsd_port
     @socket_path = ENV.fetch("STATSD_SOCKET_PATH", nil)
   end
 

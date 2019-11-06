@@ -4,8 +4,9 @@ class StatsdConnectorTest < Minitest::Test
 
   def test_host
     ENV["STATSD_HOST"] = 'test.com'
+
     connector = StatsdConnector.new
-    assert_equal"test.com", connector.host
+    assert_equal "test.com", connector.host
   end
 
   def test_port
@@ -37,6 +38,7 @@ class StatsdConnectorTest < Minitest::Test
 
   def teardown
     %w[STATSD_HOST STATSD_PORT].each {|var| ENV.delete var }
+    PumaStatsd.reset_config
   end
 
 end

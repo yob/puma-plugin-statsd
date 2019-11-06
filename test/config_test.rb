@@ -15,10 +15,11 @@ class ConfigTest < MiniTest::Test
   end
 
   def test_config_defaults
-    assert_equal '127.0.0.1', PumaStatsd.config.statsd_host
-    assert_equal '8125'     , PumaStatsd.config.statsd_port
-    assert_nil       PumaStatsd.config.pod_name
-    assert_nil       PumaStatsd.config.statsd_grouping
+    assert_nil PumaStatsd.config.statsd_host
+    assert_nil PumaStatsd.config.pod_name
+    assert_nil PumaStatsd.config.statsd_grouping
+
+    assert_equal 8125, PumaStatsd.config.statsd_port
   end
 
   def test_config_from_default_env
