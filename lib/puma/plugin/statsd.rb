@@ -7,8 +7,8 @@ require 'socket'
 module PumaStatsd
   def self.config
     @config ||= OpenStruct.new({
-      statsd_host: ENV.fetch('STATSD_HOST', '127.0.0.1'),
-      statsd_port: ENV.fetch('STATSD_PORT','8125'),
+      statsd_host: ENV.fetch('STATSD_HOST', nil),
+      statsd_port: ENV.fetch('STATSD_PORT', 8125),
       pod_name: ENV.fetch('MY_POD_NAME', nil),
       statsd_grouping: ENV.fetch('STATSD_GROUPING', nil)
     })
@@ -24,14 +24,13 @@ module PumaStatsd
 end
 
 class StatsdConnector
-  ENV_NAME = "STATSD_HOST"
   STATSD_TYPES = { count: 'c', gauge: 'g' }
 
   attr_reader :host, :port
 
   def initialize
-    @host = ENV.fetch(ENV_NAME, nil)
-    @port = ENV.fetch("STATSD_PORT", 8125)
+    @host = ::PumaStatsd.config.statsd_host
+    @port = ::PumaStatsd.config.statsd_port
   end
 
   def enabled?
@@ -124,7 +123,7 @@ Puma::Plugin.create do
       @launcher.events.debug "statsd: enabled (host: #{@statsd.host})"
       register_hooks
     else
-      @launcher.events.debug "statsd: not enabled (no #{StatsdConnector::ENV_NAME} env var found)"
+      @launcher.events.debug "statsd: not enabled (no statsd host set)"
     end
   end
 
