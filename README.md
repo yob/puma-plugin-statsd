@@ -72,35 +72,21 @@ export DD_TAGS="env:test simple-tag-0 tag-key-1:tag-value-1"
 bundle exec rails server
 ```
 
-#### MY_POD_NAME
 
-`MY_POD_NAME`: Set a `pod_name` tag to the metrics. The `MY_POD_NAME`
-environment variable is recommended in the datadog kubernetes setup
-documentation, and for puma apps deployed to kubernetes it's very helpful to
-have the option to report on specific pods.
+Add the following to your config/puma.rb:
 
-You can set it on your pods like this:
-
-```yaml
-env:
-  - name: MY_POD_NAME
-    valueFrom:
-      fieldRef:
-        fieldPath: metadata.name
 ```
+if ENV['KUBERNETES_SERVICE_HOST'] && ENV['PERFTOOLS_DATADOG_HOST']
+  plugin :statsd
 
-#### STATSD_GROUPING
-
-`STATSD_GROUPING`: add a `grouping` tag to the metrics, with a value equal to
-the environment variable value. This is particularly helpful in a kubernetes
-deployment where each pod has a unique name but you want the option to group
-metrics across all pods in a deployment. Setting this on the pods in a
-deployment might look something like:
-
-```yaml
-env:
-  - name: STATSD_GROUPING
-    value: deployment-foo
+  ::PumaStatsd.configure do |config|
+    config.pod_name = ENV['HOSTNAME']
+    # Extract deployment name from pod name
+    config.statsd_grouping = ENV['HOSTNAME'].sub(/\-[a-z0-9]+\-[a-z0-9]{5}$/, '')
+    config.statsd_host = ENV['PERFTOOLS_DATADOG_HOST']
+    config.statsd_port = ENV['PERFTOOLS_DATADOG_PORT']
+  end
+end
 ```
 
 ## Contributing
