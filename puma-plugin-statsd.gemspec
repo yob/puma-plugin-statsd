@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name     = "puma-plugin-statsd"
-  spec.version  = "0.1.0"
+  spec.version  = "0.1.3"
   spec.author   = "James Healy"
   spec.email    = "james@yob.id.au"
 
@@ -18,4 +18,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest", "~> 5.0"
   spec.add_development_dependency "sinatra"
   spec.add_development_dependency "rack"
+  spec.add_development_dependency "everfi-gemfury"
 end

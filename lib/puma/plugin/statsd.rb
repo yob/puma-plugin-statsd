@@ -4,15 +4,33 @@ require "puma"
 require "puma/plugin"
 require 'socket'
 
+module PumaStatsd
+  def self.config
+    @config ||= OpenStruct.new({
+      statsd_host: ENV.fetch('STATSD_HOST', nil),
+      statsd_port: ENV.fetch('STATSD_PORT', 8125),
+      pod_name: ENV.fetch('MY_POD_NAME', nil),
+      statsd_grouping: ENV.fetch('STATSD_GROUPING', nil)
+    })
+  end
+
+  def self.configure
+    yield config
+  end
+
+  def self.reset_config
+    @config = nil
+  end
+end
+
 class StatsdConnector
-  ENV_NAME = "STATSD_HOST"
   STATSD_TYPES = { count: 'c', gauge: 'g' }
 
   attr_reader :host, :port
 
   def initialize
-    @host = ENV.fetch(ENV_NAME, nil)
-    @port = ENV.fetch("STATSD_PORT", 8125)
+    @host = ::PumaStatsd.config.statsd_host
+    @port = ::PumaStatsd.config.statsd_port
   end
 
   def enabled?
@@ -26,10 +44,16 @@ class StatsdConnector
       data = "#{data}|##{tag_str}"
     end
 
-    socket = UDPSocket.new
+    socket = udp_socket
     socket.send(data, 0, host, port)
   ensure
     socket.close
+  end
+
+  private
+
+  def udp_socket
+    UDPSocket.new
   end
 end
 
@@ -99,7 +123,7 @@ Puma::Plugin.create do
       @launcher.events.debug "statsd: enabled (host: #{@statsd.host})"
       register_hooks
     else
-      @launcher.events.debug "statsd: not enabled (no #{StatsdConnector::ENV_NAME} env var found)"
+      @launcher.events.debug "statsd: not enabled (no statsd host set)"
     end
   end
 
@@ -114,14 +138,12 @@ Puma::Plugin.create do
   end
 
   def tags
-    tags = {}
-    if ENV.has_key?("MY_POD_NAME")
-      tags[:pod_name] = ENV.fetch("MY_POD_NAME", "no_pod")
+    @tags ||= begin
+      tags = {}
+      tags[:pod_name] = ::PumaStatsd.config.pod_name if ::PumaStatsd.config.pod_name
+      tags[:grouping] = ::PumaStatsd.config.statsd_grouping if ::PumaStatsd.config.statsd_grouping
+      tags
     end
-    if ENV.has_key?("STATSD_GROUPING")
-      tags[:grouping] = ENV.fetch("STATSD_GROUPING", "no-group")
-    end
-    tags
   end
 
   # Send data to statsd every few seconds
