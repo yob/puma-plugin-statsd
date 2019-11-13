@@ -1,7 +1,8 @@
 # Puma Statsd Plugin
 
-[Puma][puma] integration with [statsd][statsd] for easy tracking of key metrics
-that puma can provide:
+EverFi fork of the puma statsd plugin. Sends key [Puma][puma] metrics to [statsd][statsd].
+
+Metrics:
 
 * puma.workers
 * puma.booted_workers
@@ -12,29 +13,21 @@ that puma can provide:
 * puma.old_workers
 * puma.requests_count
 
-  [puma]: https://github.com/puma/puma
-  [statsd]: https://github.com/etsy/statsd
+In our case, these will be sent to datadog and tagged with:
+
+* pod_name (e.g. dev-adminifi-web-cff64b8f9-6mlsp)
+* grouping (e.g. dev-adminifi-web)
 
 ## Installation
 
-Add this gem to your Gemfile with puma and then bundle:
+Add this gem to your Gemfile under the EverFi gemfury source:
 
 ```ruby
-gem "puma"
-gem "puma-plugin-statsd"
-```
+source 'https://<your app token>@gem.fury.io/everfi/' do
 
-Add it to your puma config:
+  gem "puma-plugin-statsd"
 
-```ruby
-# config/puma.rb
-
-bind "http://127.0.0.1:9292"
-
-workers 1
-threads 8, 16
-
-plugin :statsd
+end
 ```
 
 ## Usage
@@ -75,7 +68,16 @@ bundle exec rails server
 
 Add the following to your config/puma.rb:
 
-```
+
+```ruby
+# The PERFTOOLS_DATADOG_* vars are used by the foundry-perftools
+# gem to connect to our local datadog statsd service.
+#
+# Feel free to use different vars if you want to.
+#
+# We are checking for KUBERNETES_SERVICE_HOST so this only runs
+# when deployed to our kubernetes clusters. Change this if you
+# want to run it locally.
 if ENV['KUBERNETES_SERVICE_HOST'] && ENV['PERFTOOLS_DATADOG_HOST']
   plugin :statsd
 
@@ -83,18 +85,15 @@ if ENV['KUBERNETES_SERVICE_HOST'] && ENV['PERFTOOLS_DATADOG_HOST']
     config.pod_name = ENV['HOSTNAME']
     # Extract deployment name from pod name
     config.statsd_grouping = ENV['HOSTNAME'].sub(/\-[a-z0-9]+\-[a-z0-9]{5}$/, '')
+
     config.statsd_host = ENV['PERFTOOLS_DATADOG_HOST']
     config.statsd_port = ENV['PERFTOOLS_DATADOG_PORT']
   end
 end
 ```
 
-## Contributing
 
-Bug reports and pull requests are welcome on GitHub at
-https://github.com/yob/puma-plugin-statsd.
-
-## Testing the data being sent to statsd
+## Testing the gem
 
 Start a pretend statsd server that listens for UDP packets on port 8125.
 
@@ -110,7 +109,7 @@ If you are developing/testing this gem locally:
 
 Start puma:
 
-    STATSD_HOST=127.0.0.1 bundle exec puma devtools/config.ru --config devtools/puma-config.rb
+  STATSD_HOST=127.0.0.1 bundle exec puma devtools/config.ru --config devtools/puma-config.rb
 
 Throw some traffic at it, either with curl or a tool like ab:
 
