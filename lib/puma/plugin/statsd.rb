@@ -121,6 +121,7 @@ class PumaStats
   end
 
   def percent_busy
+    return 0 if max_threads == 0
     ((1.0 - pool_capacity.to_f/max_threads.to_f)*100).round
   end
 end
