@@ -164,6 +164,7 @@ Puma::Plugin.create do
         @statsd.send(metric_name: "puma.backlog", value: stats.backlog, type: :gauge, tags: tags)
         @statsd.send(metric_name: "puma.pool_capacity", value: stats.pool_capacity, type: :gauge, tags: tags)
         @statsd.send(metric_name: "puma.max_threads", value: stats.max_threads, type: :gauge, tags: tags)
+        @statsd.send(metric_name: "puma.percent_busy", value: stats.percent_busy, type: :gauge, tags: tags)
       rescue StandardError => e
         @launcher.events.error "! statsd: notify stats failed:\n  #{e.to_s}\n  #{e.backtrace.join("\n    ")}"
       ensure
