@@ -4,14 +4,17 @@ EverFi fork of the puma statsd plugin. Sends key [Puma][puma] metrics to [statsd
 
 Metrics:
 
-* puma.workers
-* puma.booted_workers
-* puma.running
-* puma.backlog
-* puma.pool_capacity
-* puma.max_threads
+* puma.workers - number of workers (for clustered mode)
+* puma.booted_workers - number of workers booted (for clustered mode)
+* puma.running - number of threads spawned currently
+* puma.backlog - number of requests waiting to be picked up by a thread
+* puma.pool_capacity - number of available threads to process requests
+* puma.max_threads - maximum number of threads that can be spawned
+* puma.percent_busy - percentage of max_threads that are currently processing requests
 * puma.old_workers
 * puma.requests_count
+
+When running puma in clustered mode, stats will be totals across all of the workers running
 
 In our case, these will be sent to datadog and tagged with:
 
