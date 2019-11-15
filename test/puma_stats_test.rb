@@ -62,4 +62,9 @@ class PumaStatsTest < MiniTest::Test
     assert_equal 3, worker_stats.max_threads
   end
 
+  def test_percent_busy
+    assert_equal 33, cluster_stats.percent_busy
+    assert_equal 33, worker_stats.percent_busy
+  end
+
 end

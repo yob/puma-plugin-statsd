@@ -119,6 +119,10 @@ class PumaStats
       @stats.fetch(:requests_count, 0)
     end
   end
+
+  def percent_busy
+    ((1.0 - pool_capacity.to_f/max_threads.to_f)*100).round
+  end
 end
 
 Puma::Plugin.create do
