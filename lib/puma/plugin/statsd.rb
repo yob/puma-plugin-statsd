@@ -40,46 +40,46 @@ class PumaStats
   end
 
   def clustered?
-    @stats.has_key? "workers"
+    @stats.has_key?(:workers)
   end
 
   def workers
-    @stats.fetch("workers", 1)
+    @stats.fetch(:workers, 1)
   end
 
   def booted_workers
-    @stats.fetch("booted_workers", 1)
+    @stats.fetch(:booted_workers, 1)
   end
 
   def running
     if clustered?
-      @stats["worker_status"].map { |s| s["last_status"].fetch("running", 0) }.inject(0, &:+)
+      @stats[:worker_status].map { |s| s[:last_status].fetch(:running, 0) }.inject(0, &:+)
     else
-      @stats.fetch("running", 0)
+      @stats.fetch(:running, 0)
     end
   end
 
   def backlog
     if clustered?
-      @stats["worker_status"].map { |s| s["last_status"].fetch("backlog", 0) }.inject(0, &:+)
+      @stats[:worker_status].map { |s| s[:last_status].fetch(:backlog, 0) }.inject(0, &:+)
     else
-      @stats.fetch("backlog", 0)
+      @stats.fetch(:backlog, 0)
     end
   end
 
   def pool_capacity
     if clustered?
-      @stats["worker_status"].map { |s| s["last_status"].fetch("pool_capacity", 0) }.inject(0, &:+)
+      @stats[:worker_status].map { |s| s[:last_status].fetch(:pool_capacity, 0) }.inject(0, &:+)
     else
-      @stats.fetch("pool_capacity", 0)
+      @stats.fetch(:pool_capacity, 0)
     end
   end
 
   def max_threads
     if clustered?
-      @stats["worker_status"].map { |s| s["last_status"].fetch("max_threads", 0) }.inject(0, &:+)
+      @stats[:worker_status].map { |s| s[:last_status].fetch(:max_threads, 0) }.inject(0, &:+)
     else
-      @stats.fetch("max_threads", 0)
+      @stats.fetch(:max_threads, 0)
     end
   end
 end
@@ -110,7 +110,7 @@ Puma::Plugin.create do
   end
 
   def fetch_stats
-    JSON.parse(Puma.stats)
+    JSON.parse(Puma.stats, symbolize_names: true)
   end
 
   def tags
