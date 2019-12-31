@@ -5,31 +5,22 @@ require "puma/plugin"
 require 'socket'
 
 class StatsdConnector
-  ENV_NAME = "STATSD_HOST"
-  STATSD_TYPES = { count: 'c', gauge: 'g' }
-
-  attr_reader :host, :port
-
   def initialize
-    @host = ENV.fetch(ENV_NAME, nil)
-    @port = ENV.fetch("STATSD_PORT", 8125)
+    @data = []
   end
 
   def enabled?
-    !!host
+    true
   end
 
   def send(metric_name:, value:, type:, tags: {})
-    data = "#{metric_name}:#{value}|#{STATSD_TYPES.fetch(type)}"
-    if tags.any?
-      tag_str = tags.map { |k,v| "#{k}:#{v}" }.join(",")
-      data = "#{data}|##{tag_str}"
-    end
+    @data << "#{type}##{metric_name}=#{value}"
+  end
 
-    socket = UDPSocket.new
-    socket.send(data, 0, host, port)
-  ensure
-    socket.close
+  def submit(&block)
+    block.call(self)
+    STDOUT.puts @data.join(" ")
+    @data.clear
   end
 end
 
@@ -96,7 +87,7 @@ Puma::Plugin.create do
 
     @statsd = ::StatsdConnector.new
     if @statsd.enabled?
-      @launcher.events.debug "statsd: enabled (host: #{@statsd.host})"
+      @launcher.events.debug "statsd: enabled"
       register_hooks
     else
       @launcher.events.debug "statsd: not enabled (no #{StatsdConnector::ENV_NAME} env var found)"
@@ -126,17 +117,19 @@ Puma::Plugin.create do
 
   # Send data to statsd every few seconds
   def stats_loop
-    sleep 5
+    sleep 30
     loop do
       @launcher.events.debug "statsd: notify statsd"
       begin
         stats = ::PumaStats.new(fetch_stats)
-        @statsd.send(metric_name: "puma.workers", value: stats.workers, type: :gauge, tags: tags)
-        @statsd.send(metric_name: "puma.booted_workers", value: stats.booted_workers, type: :gauge, tags: tags)
-        @statsd.send(metric_name: "puma.running", value: stats.running, type: :gauge, tags: tags)
-        @statsd.send(metric_name: "puma.backlog", value: stats.backlog, type: :gauge, tags: tags)
-        @statsd.send(metric_name: "puma.pool_capacity", value: stats.pool_capacity, type: :gauge, tags: tags)
-        @statsd.send(metric_name: "puma.max_threads", value: stats.max_threads, type: :gauge, tags: tags)
+        @statsd.submit do |s|
+          s.send(metric_name: "puma.workers", value: stats.workers, type: :measure, tags: tags)
+          s.send(metric_name: "puma.booted_workers", value: stats.booted_workers, type: :measure, tags: tags)
+          s.send(metric_name: "puma.running", value: stats.running, type: :measure, tags: tags)
+          s.send(metric_name: "puma.backlog", value: stats.backlog, type: :measure, tags: tags)
+          s.send(metric_name: "puma.pool_capacity", value: stats.pool_capacity, type: :measure, tags: tags)
+          s.send(metric_name: "puma.max_threads", value: stats.max_threads, type: :measure, tags: tags)
+        end
       rescue StandardError => e
         @launcher.events.error "! statsd: notify stats failed:\n  #{e.to_s}\n  #{e.backtrace.join("\n    ")}"
       ensure
