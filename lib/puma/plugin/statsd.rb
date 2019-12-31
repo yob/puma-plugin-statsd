@@ -117,7 +117,7 @@ Puma::Plugin.create do
 
   # Send data to statsd every few seconds
   def stats_loop
-    sleep 30
+    sleep 5
     loop do
       @launcher.events.debug "statsd: notify statsd"
       begin
@@ -133,7 +133,7 @@ Puma::Plugin.create do
       rescue StandardError => e
         @launcher.events.error "! statsd: notify stats failed:\n  #{e.to_s}\n  #{e.backtrace.join("\n    ")}"
       ensure
-        sleep 2
+        sleep 30
       end
     end
   end
