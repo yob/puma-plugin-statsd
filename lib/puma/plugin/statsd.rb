@@ -237,7 +237,7 @@ Puma::Plugin.create do
         @statsd.send(metric_name: prefixed_metric_name("puma.requests_count"), value: stats.requests_count, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.percent_busy"), value: stats.percent_busy, type: :gauge, tags: tags)
       rescue StandardError => e
-        @log_writer.unknown_error e, nil, "! statsd: notify stats failed"
+        @log_writer.log "! statsd: notify stats failed:\n  #{e.to_s}\n  #{e.backtrace.join("\n    ")}"
       ensure
         sleep 2
       end
