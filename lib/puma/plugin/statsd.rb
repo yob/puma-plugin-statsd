@@ -14,7 +14,7 @@ class StatsdConnector
     @host = ENV.fetch(ENV_NAME, nil)
     @port = ENV.fetch("STATSD_PORT", 8125)
     @metric_prefix = ENV.fetch("STATSD_METRIC_PREFIX", nil)
-    @metric_prefix += ":" if @metric_prefix
+    @metric_prefix += ":" if @metric_prefix && !@metric_prefix.end_with?(":")
   end
 
   def enabled?
