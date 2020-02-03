@@ -13,6 +13,8 @@ class StatsdConnector
   def initialize
     @host = ENV.fetch(ENV_NAME, nil)
     @port = ENV.fetch("STATSD_PORT", 8125)
+    @metric_prefix = ENV.fetch("STATSD_METRIC_PREFIX", nil)
+    @metric_prefix += ":" if @metric_prefix
   end
 
   def enabled?
@@ -20,7 +22,7 @@ class StatsdConnector
   end
 
   def send(metric_name:, value:, type:, tags: {})
-    data = "#{metric_name}:#{value}|#{STATSD_TYPES.fetch(type)}"
+    data = "#{@metric_prefix}#{metric_name}:#{value}|#{STATSD_TYPES.fetch(type)}"
     if tags.any?
       tag_str = tags.map { |k,v| "#{k}:#{v}" }.join(",")
       data = "#{data}|##{tag_str}"
