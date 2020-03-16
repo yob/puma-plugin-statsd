@@ -1,7 +1,15 @@
 /.bundle/
 /.yardoc
 /Gemfile.lock
+/_yardoc/
 /coverage/
 /doc/
 /pkg/
+/spec/reports/
+/vendor/
 /tmp/
+
+/config
+/.idea
+
+*.gem

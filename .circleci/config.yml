@@ -1,0 +1,60 @@
+version: 2.1
+
+orbs:
+  gem: wealthsimple/gem@dev:master
+  ruby: wealthsimple/ruby@dev:master
+
+references:
+  parameters: &parameters
+    ruby_version: '2.5.7'
+    context: wealthsimple
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - gem/checkout:
+          name: checkout_and_bundle
+          <<: *parameters
+      - gem/test:
+          name: test
+          <<: *parameters
+          report_coverage: false
+          requires:
+            - checkout_and_bundle
+      - ruby/security_check:
+          name: vulnerability_check
+          <<: *parameters
+          requires:
+            - checkout_and_bundle
+      - ruby/lint:
+          name: lint_check
+          <<: *parameters
+          requires:
+            - checkout_and_bundle
+      - gem/release:
+          name: release
+          <<: *parameters
+          filters:
+            branches:
+              only: master
+          requires:
+            - lint_check
+            - test
+            - vulnerability_check
+  security-audit:
+    triggers:
+      - schedule:
+          # 11:30 am UTC: 6:30 am EST / 7:30 am EDT
+          cron: "30 11 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - gem/checkout:
+          name: checkout_and_bundle
+          <<: *parameters
+      - ruby/security_check:
+          name: vulnerability_check
+          <<: *parameters
+          requires:
+            - checkout_and_bundle

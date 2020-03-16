@@ -1,0 +1,11 @@
+inherit_from: .rubocop_todo.yml
+
+inherit_gem:
+  ws-style:
+    - default.yml
+
+AllCops:
+  TargetRubyVersion: 2.4
+
+Rails:
+  Enabled: false
