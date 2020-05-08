@@ -118,7 +118,12 @@ Puma::Plugin.create do
   end
 
   def fetch_stats
-    JSON.parse(Puma.stats, symbolize_names: true)
+    stats = Puma.stats
+    if stats.is_a?(Hash)
+      stats
+    else
+      JSON.parse(stats, symbolize_names: true)
+    end
   end
 
   def tags
