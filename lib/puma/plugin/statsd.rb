@@ -117,11 +117,13 @@ Puma::Plugin.create do
     in_background(&method(:stats_loop))
   end
 
-  def fetch_stats
-    stats = Puma.stats
-    if stats.is_a?(Hash)
-      stats
-    else
+  if Puma.respond_to?(:stats_hash)
+    def fetch_stats
+      Puma.stats_hash
+    end
+  else
+    def fetch_stats
+      stats = Puma.stats
       JSON.parse(stats, symbolize_names: true)
     end
   end
