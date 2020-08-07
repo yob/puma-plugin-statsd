@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    puma-plugin-statsd (0.1.5)
+    puma-plugin-statsd (0.1.6)
       json
       puma (>= 3.12, < 5)
 
