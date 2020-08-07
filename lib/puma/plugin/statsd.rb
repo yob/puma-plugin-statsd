@@ -24,7 +24,7 @@ module PumaStatsd
 end
 
 class StatsdConnector
-  STATSD_TYPES = { count: 'c', gauge: 'g' }
+  STATSD_TYPES = { count: 'c', gauge: 'g', histogram: 'h' }
   METRIC_DELIMETER = "."
 
   attr_reader :host, :port
