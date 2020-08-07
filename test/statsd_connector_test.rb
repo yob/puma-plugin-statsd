@@ -36,6 +36,54 @@ class StatsdConnectorTest < Minitest::Test
     assert mock_socket.verify
   end
 
+  def test_sends_count_metric
+    ENV["STATSD_HOST"] = 'test.com'
+    ENV["STATSD_PORT"] = '1234'
+    connector = StatsdConnector.new
+
+    mock_socket = Minitest::Mock.new
+    mock_socket.expect :send, true, ["test:1|c", Integer,String, String]
+    def mock_socket.close; nil; end
+
+    connector.stub :udp_socket, mock_socket do
+      connector.send(metric_name: 'test',value: 1,type: :count)
+    end
+
+    assert mock_socket.verify
+  end
+
+  def test_sends_gauge_metric
+    ENV["STATSD_HOST"] = 'test.com'
+    ENV["STATSD_PORT"] = '1234'
+    connector = StatsdConnector.new
+
+    mock_socket = Minitest::Mock.new
+    mock_socket.expect :send, true, ["test:1|g", Integer,String, String]
+    def mock_socket.close; nil; end
+
+    connector.stub :udp_socket, mock_socket do
+      connector.send(metric_name: 'test',value: 1,type: :gauge)
+    end
+
+    assert mock_socket.verify
+  end
+
+  def test_sends_histogram_metric
+    ENV["STATSD_HOST"] = 'test.com'
+    ENV["STATSD_PORT"] = '1234'
+    connector = StatsdConnector.new
+
+    mock_socket = Minitest::Mock.new
+    mock_socket.expect :send, true, ["test:1|h", Integer,String, String]
+    def mock_socket.close; nil; end
+
+    connector.stub :udp_socket, mock_socket do
+      connector.send(metric_name: 'test',value: 1,type: :histogram)
+    end
+
+    assert mock_socket.verify
+  end
+
   def teardown
     %w[STATSD_HOST STATSD_PORT].each {|var| ENV.delete var }
     PumaStatsd.reset_config

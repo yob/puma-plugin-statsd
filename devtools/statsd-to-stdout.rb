@@ -7,5 +7,6 @@ server.bind(host, port)
 while true
   text, sender = server.recvfrom(64)
   remote_host = sender[3]
-  STDOUT.puts "#{remote_host}:" + text
+  time = Time.now.strftime('%H:%M:%S.%L')
+  STDOUT.puts "#{remote_host}:#{text} - #{time}"
 end

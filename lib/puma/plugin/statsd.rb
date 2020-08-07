@@ -24,7 +24,7 @@ module PumaStatsd
 end
 
 class StatsdConnector
-  STATSD_TYPES = { count: 'c', gauge: 'g' }
+  STATSD_TYPES = { count: 'c', gauge: 'g', histogram: 'h' }
 
   attr_reader :host, :port
 
@@ -161,14 +161,14 @@ Puma::Plugin.create do
         @statsd.send(metric_name: "puma.workers", value: stats.workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: "puma.booted_workers", value: stats.booted_workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: "puma.running", value: stats.running, type: :gauge, tags: tags)
-        @statsd.send(metric_name: "puma.backlog", value: stats.backlog, type: :gauge, tags: tags)
-        @statsd.send(metric_name: "puma.pool_capacity", value: stats.pool_capacity, type: :gauge, tags: tags)
+        @statsd.send(metric_name: "puma.backlog", value: stats.backlog, type: :histogram, tags: tags)
+        @statsd.send(metric_name: "puma.pool_capacity", value: stats.pool_capacity, type: :histogram, tags: tags)
         @statsd.send(metric_name: "puma.max_threads", value: stats.max_threads, type: :gauge, tags: tags)
-        @statsd.send(metric_name: "puma.percent_busy", value: stats.percent_busy, type: :gauge, tags: tags)
+        @statsd.send(metric_name: "puma.percent_busy", value: stats.percent_busy, type: :histogram, tags: tags)
       rescue StandardError => e
         @launcher.events.log "! statsd: notify stats failed:\n  #{e.to_s}\n  #{e.backtrace.join("\n    ")}"
       ensure
-        sleep 2
+        sleep 0.5
       end
     end
   end
