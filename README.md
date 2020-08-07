@@ -96,7 +96,7 @@ end
 ```
 
 
-## Testing the gem
+## Development
 
 Start a pretend statsd server that listens for UDP packets on port 8125.
 
@@ -120,6 +120,12 @@ Throw some traffic at it, either with curl or a tool like ab:
     ab -n 10000 -c 20 http://127.0.0.1:9292/
 
 Watch the output of the UDP server process - you should see statsd data printed to stdout.
+
+### Tests
+
+This gem uses MiniTest for unit testing
+
+Run tests with `rake test`
 
 ## Acknowledgements
 
