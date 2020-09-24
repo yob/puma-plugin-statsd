@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["lib/**/*.rb", "README.md", "CHANGELOG.md", "MIT-LICENSE"]
 
-  spec.add_runtime_dependency "puma", ">= 3.12", "< 5"
+  spec.add_runtime_dependency "puma", ">= 3.12", "< 6"
   spec.add_runtime_dependency "json"
 
   spec.add_development_dependency "bundler"
