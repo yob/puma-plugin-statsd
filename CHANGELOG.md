@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.3.0 2020-09-24
+
+* Support puma 5.x
+
 ## 0.2.0 2020-02-29
 
 * Added option to prefix stats metric (via STATSD_METRIC_PREFIX env var)
