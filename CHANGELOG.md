@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.2.0 2020-02-29
+
+* Added option to prefix stats metric (via STATSD_METRIC_PREFIX env var)
+
 ## 0.1.0 2019-07-06
 
 * The statsd port is now configurable
