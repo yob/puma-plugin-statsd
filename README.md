@@ -37,7 +37,7 @@ plugin :statsd
 
 ## Usage
 
-Ensure you have an environment variable set that points to a statsd host, then boot your puma app as usual.  Optionally you may specify a port (default is 8125). 
+Ensure you have an environment variable set that points to a statsd host, then boot your puma app as usual.  Optionally you may specify a port (default is 8125).
 
 ```
 STATSD_HOST=127.0.0.1 bundle exec puma
@@ -53,9 +53,25 @@ metric tags are a non-standard addition to the statsd protocol, supported by
 the datadog "dogstatsd" server.
 
 Should you be reporting the puma metrics to a dogstatsd server, you can set
-tags via the following two environment variables.
+tags via the following three environment variables.
 
-`MY_POD_NAME` adds a `pod_name` tag to the metrics. The `MY_POD_NAME`
+
+#### DD_TAGS
+
+`DD_TAGS`: Set this to a space-separated list of tags, using the
+[datadog agent standard format](https://docs.datadoghq.com/agent/docker/?tab=standard#global-options).
+
+For example, you could set this environment variable to set three datadog tags,
+and then you can filter by in the datadog interface:
+
+```bash
+export DD_TAGS="env:test simple-tag-0 tag-key-1:tag-value-1"
+bundle exec rails server
+```
+
+#### MY_POD_NAME
+
+`MY_POD_NAME`: Set a `pod_name` tag to the metrics. The `MY_POD_NAME`
 environment variable is recommended in the datadog kubernetes setup
 documentation, and for puma apps deployed to kubernetes it's very helpful to
 have the option to report on specific pods.
@@ -70,7 +86,9 @@ env:
         fieldPath: metadata.name
 ```
 
-`STATSD_GROUPING` adds a `grouping` tag to the metrics, with a value equal to
+#### STATSD_GROUPING
+
+`STATSD_GROUPING`: add a `grouping` tag to the metrics, with a value equal to
 the environment variable value. This is particularly helpful in a kubernetes
 deployment where each pod has a unique name but you want the option to group
 metrics across all pods in a deployment. Setting this on the pods in a
@@ -100,7 +118,7 @@ Start puma:
 Throw some traffic at it, either with curl or a tool like ab:
 
     curl http://127.0.0.1:9292/
-    ab -n 10000 -c 20 http://127.0.0.1:9292/ 
+    ab -n 10000 -c 20 http://127.0.0.1:9292/
 
 Watch the output of the UDP server process - you should see statsd data printed to stdout.
 

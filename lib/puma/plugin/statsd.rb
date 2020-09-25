@@ -20,12 +20,9 @@ class StatsdConnector
     !!host
   end
 
-  def send(metric_name:, value:, type:, tags: {})
+  def send(metric_name:, value:, type:, tags: nil)
     data = "#{metric_name}:#{value}|#{STATSD_TYPES.fetch(type)}"
-    if tags.any?
-      tag_str = tags.map { |k,v| "#{k}:#{v}" }.join(",")
-      data = "#{data}|##{tag_str}"
-    end
+    data = "#{data}|##{tags}" unless tags.nil?
 
     socket = UDPSocket.new
     socket.send(data, 0, host, port)
@@ -123,15 +120,39 @@ Puma::Plugin.create do
     end
   end
 
-  def tags
-    tags = {}
+  def environment_variable_tags
+    # Tags are separated by spaces, and while they are normally a tag and
+    # value separated by a ':', they can also just be tagged without any
+    # associated value.
+    #
+    # Examples: simple-tag-0 tag-key-1:tag-value-1
+    #
+    tags = []
+
     if ENV.has_key?("MY_POD_NAME")
-      tags[:pod_name] = ENV.fetch("MY_POD_NAME", "no_pod")
+      tags << "pod_name:#{ENV['MY_POD_NAME']}"
     end
+
     if ENV.has_key?("STATSD_GROUPING")
-      tags[:grouping] = ENV.fetch("STATSD_GROUPING", "no-group")
+      tags << "grouping:#{ENV['STATSD_GROUPING']}"
     end
-    tags
+
+    # Standardised datadog tag attributes, so that we can share the metric
+    # tags with the application running
+    #
+    # https://docs.datadoghq.com/agent/docker/?tab=standard#global-options
+    #
+    if ENV.has_key?("DD_TAGS")
+      ENV["DD_TAGS"].split(/\s+/).each do |t|
+        tags << t
+      end
+    end
+
+    # Return nil if we have no environment variable tags. This way we don't
+    # send an unnecessary '|' on the end of each stat
+    return nil if tags.empty?
+
+    tags.join(",")
   end
 
   def prefixed_metric_name(puma_metric)
@@ -140,6 +161,8 @@ Puma::Plugin.create do
 
   # Send data to statsd every few seconds
   def stats_loop
+    tags = environment_variable_tags
+
     sleep 5
     loop do
       @launcher.events.debug "statsd: notify statsd"
