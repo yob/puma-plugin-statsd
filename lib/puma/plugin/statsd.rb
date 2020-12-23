@@ -12,7 +12,7 @@ class StatsdConnector
   attr_reader :host, :port
 
   def initialize
-    @host = ENV.fetch(ENV_NAME, nil)
+    @host = ENV.fetch(ENV_NAME, "127.0.0.1")
     @port = ENV.fetch("STATSD_PORT", 8125)
   end
 
