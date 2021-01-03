@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.0 2021-01-03
+
+* Assume localhost for statsd host (PR #[20](https://github.com/yob/puma-plugin-statsd/pull/20))
+
 ## 1.0.0 2020-11-03
 
 * Added option to specify arbitrary datadog tags (PR #[18](https://github.com/yob/puma-plugin-statsd/pull/18))
