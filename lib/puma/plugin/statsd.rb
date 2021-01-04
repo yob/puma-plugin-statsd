@@ -49,6 +49,10 @@ class PumaStats
     @stats.fetch(:booted_workers, 1)
   end
 
+  def old_workers
+    @stats.fetch(:old_workers, 0)
+  end
+
   def running
     if clustered?
       @stats[:worker_status].map { |s| s[:last_status].fetch(:running, 0) }.inject(0, &:+)
@@ -170,6 +174,7 @@ Puma::Plugin.create do
         stats = ::PumaStats.new(fetch_stats)
         @statsd.send(metric_name: prefixed_metric_name("puma.workers"), value: stats.workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.booted_workers"), value: stats.booted_workers, type: :gauge, tags: tags)
+        @statsd.send(metric_name: prefixed_metric_name("puma.old_workers"), value: stats.old_workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.running"), value: stats.running, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.backlog"), value: stats.backlog, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.pool_capacity"), value: stats.pool_capacity, type: :gauge, tags: tags)
