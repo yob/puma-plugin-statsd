@@ -1,5 +1,4 @@
 # coding: utf-8, frozen_string_literal: true
-require "json"
 require "puma"
 require "puma/plugin"
 require 'socket'
@@ -115,6 +114,7 @@ Puma::Plugin.create do
     end
   else
     def fetch_stats
+      require "json"
       stats = Puma.stats
       JSON.parse(stats, symbolize_names: true)
     end
