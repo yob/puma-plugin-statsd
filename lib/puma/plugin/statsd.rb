@@ -15,10 +15,6 @@ class StatsdConnector
     @port = ENV.fetch("STATSD_PORT", 8125)
   end
 
-  def enabled?
-    !!host
-  end
-
   def send(metric_name:, value:, type:, tags: nil)
     data = "#{metric_name}:#{value}|#{STATSD_TYPES.fetch(type)}"
     data = "#{data}|##{tags}" unless tags.nil?
@@ -87,19 +83,15 @@ Puma::Plugin.create do
     @launcher = launcher
 
     @statsd = ::StatsdConnector.new
-    if @statsd.enabled?
-      @launcher.events.debug "statsd: enabled (host: #{@statsd.host})"
+    @launcher.events.debug "statsd: enabled (host: #{@statsd.host})"
 
-      # Fetch global metric prefix from env variable
-      @metric_prefix = ENV.fetch("STATSD_METRIC_PREFIX", nil)
-      if @metric_prefix && !@metric_prefix.end_with?(::StatsdConnector::METRIC_DELIMETER)
-        @metric_prefix += ::StatsdConnector::METRIC_DELIMETER
-      end
-
-      register_hooks
-    else
-      @launcher.events.debug "statsd: not enabled (no #{StatsdConnector::ENV_NAME} env var found)"
+    # Fetch global metric prefix from env variable
+    @metric_prefix = ENV.fetch("STATSD_METRIC_PREFIX", nil)
+    if @metric_prefix && !@metric_prefix.end_with?(::StatsdConnector::METRIC_DELIMETER)
+      @metric_prefix += ::StatsdConnector::METRIC_DELIMETER
     end
+
+    register_hooks
   end
 
   private
