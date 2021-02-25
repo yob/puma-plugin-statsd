@@ -6,7 +6,7 @@
 
 ## 1.2.0 2021-01-07
 
-* New metrics: old_workers (PR #[21](https://github.com/yob/puma-plugin-statsd/pull/21)) and requsts_count (PR #[28](https://github.com/yob/puma-plugin-statsd/pull/28))
+* New metrics: old_workers (PR #[21](https://github.com/yob/puma-plugin-statsd/pull/21)) and requests_count (PR #[28](https://github.com/yob/puma-plugin-statsd/pull/28))
 * Require json at runtime to be extra sure we don't load the wrong version before bundler has initialised the LOAD_PATH
 
 ## 1.1.0 2021-01-03

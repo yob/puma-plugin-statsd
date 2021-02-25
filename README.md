@@ -9,6 +9,8 @@ that puma can provide:
 * puma.backlog
 * puma.pool_capacity
 * puma.max_threads
+* puma.old_workers
+* puma.requests_count
 
   [puma]: https://github.com/puma/puma
   [statsd]: https://github.com/etsy/statsd
