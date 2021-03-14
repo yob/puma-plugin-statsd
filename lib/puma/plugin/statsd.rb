@@ -112,18 +112,6 @@ Puma::Plugin.create do
     in_background(&method(:stats_loop))
   end
 
-  if Puma.respond_to?(:stats_hash)
-    def fetch_stats
-      Puma.stats_hash
-    end
-  else
-    def fetch_stats
-      require "json"
-      stats = Puma.stats
-      JSON.parse(stats, symbolize_names: true)
-    end
-  end
-
   def environment_variable_tags
     # Tags are separated by spaces, and while they are normally a tag and
     # value separated by a ':', they can also just be tagged without any
@@ -171,7 +159,7 @@ Puma::Plugin.create do
     loop do
       @launcher.events.debug "statsd: notify statsd"
       begin
-        stats = ::PumaStats.new(fetch_stats)
+        stats = ::PumaStats.new(Puma.stats_hash)
         @statsd.send(metric_name: prefixed_metric_name("puma.workers"), value: stats.workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.booted_workers"), value: stats.booted_workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.old_workers"), value: stats.old_workers, type: :gauge, tags: tags)
