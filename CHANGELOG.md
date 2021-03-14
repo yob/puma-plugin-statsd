@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.0.0 ???
+
+* Require puma 5 or better
+
 ## 1.2.1 2021-01-11
 
 * Remove json from the gemspec
