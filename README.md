@@ -114,11 +114,13 @@ Start a pretend statsd server that listens for UDP packets on port 8125.
 
 If you've installed the gem in your app:
 
+    # only need to install the binstub once
+    bundle binstubs puma-plugin-statsd
     ./bin/statsd-to-stdout
 
 If you are developing/testing this gem locally:
 
-    ./devtools/statsd-to-stdout
+    ./bin/statsd-to-stdout
 
 Start puma:
 
