@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.license  = "MIT"
 
   spec.files = Dir["lib/**/*.rb", "README.md", "CHANGELOG.md", "MIT-LICENSE"]
-  spec.executables = ["devtools/statsd-to-stdout"]
+  spec.executables = ["statsd-to-stdout"]
 
   spec.add_runtime_dependency "puma", ">= 5.0", "< 6"
 
