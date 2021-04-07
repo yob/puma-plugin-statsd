@@ -135,7 +135,7 @@ Puma::Plugin.create do
     # https://docs.datadoghq.com/agent/docker/?tab=standard#global-options
     #
     if ENV.has_key?("DD_TAGS")
-      ENV["DD_TAGS"].split(/\s+/).each do |t|
+      ENV["DD_TAGS"].split(/\s+|,/).each do |t|
         tags << t
       end
     end
