@@ -110,9 +110,17 @@ https://github.com/yob/puma-plugin-statsd.
 
 ## Testing the data being sent to statsd
 
-Start a pretend statsd server that listens for UDP packets on port 8125:
+Start a pretend statsd server that listens for UDP packets on port 8125.
 
-    ruby devtools/statsd-to-stdout.rb
+If you've installed the gem in your app:
+
+    # only need to install the binstub once
+    bundle binstubs puma-plugin-statsd
+    ./bin/statsd-to-stdout
+
+If you are developing/testing this gem locally:
+
+    ./bin/statsd-to-stdout
 
 Start puma:
 
