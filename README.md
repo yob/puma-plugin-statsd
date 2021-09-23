@@ -1,6 +1,6 @@
 # Puma Statsd Plugin
 
-[Puma][puma] integration with [statsd](statsd) for easy tracking of key metrics
+[Puma][puma] integration with [statsd][statsd] for easy tracking of key metrics
 that puma can provide:
 
 * puma.workers
