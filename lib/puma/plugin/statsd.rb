@@ -140,6 +140,22 @@ Puma::Plugin.create do
       end
     end
 
+    # Support the Unified Service Tagging from Datadog, so that we can share
+    # the metric tags with the application running
+    #
+    # https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging
+    if ENV.has_key?("DD_ENV")
+      tags << "env:#{ENV["DD_ENV"]}"
+    end
+
+    if ENV.has_key?("DD_SERVICE")
+      tags << "service:#{ENV["DD_SERVICE"]}"
+    end
+
+    if ENV.has_key?("DD_VERSION")
+      tags << "version:#{ENV["DD_VERSION"]}"
+    end
+
     # Return nil if we have no environment variable tags. This way we don't
     # send an unnecessary '|' on the end of each stat
     return nil if tags.empty?
