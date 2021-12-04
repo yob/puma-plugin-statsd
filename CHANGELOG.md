@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.1.0 2021-12-04
+
+* Adds support for Datadog unified service tagging (env, service, version) (PR #[31](https://github.com/yob/puma-plugin-statsd/pull/37))
+
 ## 2.0.0 2021-07-27
 
 * Require puma 5 or better
