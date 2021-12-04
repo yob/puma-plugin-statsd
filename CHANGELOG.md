@@ -8,7 +8,7 @@
 
 * Require puma 5 or better
 * Split DD_TAGS environment variable by commas or spaces (PR #[31](https://github.com/yob/puma-plugin-statsd/pull/31))
-* Gracefully handle unexpecte errors when submitting to statsd (like DNS resolution failures) (PR #[35](https://github.com/yob/puma-plugin-statsd/pull/35))
+* Gracefully handle unexpected errors when submitting to statsd (like DNS resolution failures) (PR #[35](https://github.com/yob/puma-plugin-statsd/pull/35))
 
 ## 1.2.1 2021-01-11
 
