@@ -28,8 +28,9 @@ end
 
 # Wrap puma's stats in a safe API
 class PumaStats
-  def initialize(stats)
+  def initialize(stats, previous_requests_count = 0)
     @stats = stats
+    @previous_requests_count = previous_requests_count
   end
 
   def clustered?
@@ -82,10 +83,12 @@ class PumaStats
 
   def requests_count
     if clustered?
-      @stats[:worker_status].map { |s| s[:last_status].fetch(:requests_count, 0) }.inject(0, &:+)
+      count = @stats[:worker_status].map { |s| s[:last_status].fetch(:requests_count, 0) }.inject(0, &:+)
     else
-      @stats.fetch(:requests_count, 0)
+      count = @stats.fetch(:requests_count, 0)
     end
+
+    return count - @previous_requests_count
   end
 end
 
@@ -170,12 +173,14 @@ Puma::Plugin.create do
   # Send data to statsd every few seconds
   def stats_loop
     tags = environment_variable_tags
+    previous_requests_count = 0
 
     sleep 5
     loop do
       @launcher.events.debug "statsd: notify statsd"
       begin
-        stats = ::PumaStats.new(Puma.stats_hash)
+        stats = ::PumaStats.new(Puma.stats_hash, previous_requests_count)
+        previous_requests_count += stats.requests_count
         @statsd.send(metric_name: prefixed_metric_name("puma.workers"), value: stats.workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.booted_workers"), value: stats.booted_workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.old_workers"), value: stats.old_workers, type: :gauge, tags: tags)
@@ -183,7 +188,7 @@ Puma::Plugin.create do
         @statsd.send(metric_name: prefixed_metric_name("puma.backlog"), value: stats.backlog, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.pool_capacity"), value: stats.pool_capacity, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.max_threads"), value: stats.max_threads, type: :gauge, tags: tags)
-        @statsd.send(metric_name: prefixed_metric_name("puma.requests_count"), value: stats.requests_count, type: :gauge, tags: tags)
+        @statsd.send(metric_name: prefixed_metric_name("puma.requests_count"), value: stats.requests_count, type: :count, tags: tags)
       rescue StandardError => e
         @launcher.events.unknown_error e, nil, "! statsd: notify stats failed"
       ensure
