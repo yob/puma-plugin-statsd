@@ -13,14 +13,21 @@ class StatsdConnector
   def initialize
     @host = ENV.fetch(ENV_NAME, "127.0.0.1")
     @port = ENV.fetch("STATSD_PORT", 8125)
+    @socket_path = ENV.fetch("STATSD_SOCKET_PATH", nil)
   end
 
   def send(metric_name:, value:, type:, tags: nil)
     data = "#{metric_name}:#{value}|#{STATSD_TYPES.fetch(type)}"
     data = "#{data}|##{tags}" unless tags.nil?
 
-    socket = UDPSocket.new
-    socket.send(data, 0, host, port)
+    if @socket_path
+      socket = Socket.new(Socket::AF_UNIX, Socket::SOCK_DGRAM)
+      socket.connect(Socket.pack_sockaddr_un(@socket_path))
+      socket.sendmsg_nonblock(data)
+    else
+      socket = UDPSocket.new
+      socket.send(data, 0, host, port)
+    end
   ensure
     socket.close
   end
