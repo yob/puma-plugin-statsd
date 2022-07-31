@@ -1,8 +1,12 @@
 # CHANGELOG
 
+## 2.2.0 2022-07-31
+
+* Support communicating with the Datadog agent via a UNIX socket (set STATSD_SOCKET_PATH env var) (PR #[38](https://github.com/yob/puma-plugin-statsd/pull/38))
+
 ## 2.1.0 2021-12-04
 
-* Adds support for Datadog unified service tagging (env, service, version) (PR #[31](https://github.com/yob/puma-plugin-statsd/pull/37))
+* Adds support for Datadog unified service tagging (env, service, version) (PR #[37](https://github.com/yob/puma-plugin-statsd/pull/37))
 
 ## 2.0.0 2021-07-27
 
