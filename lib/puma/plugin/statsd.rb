@@ -163,6 +163,14 @@ Puma::Plugin.create do
       tags << "version:#{ENV["DD_VERSION"]}"
     end
 
+    # Support the origin detection over UDP from Datadog, it allows DogStatsD
+    # to detect where the container metrics come from, and tag metrics automatically.
+    #
+    # https://docs.datadoghq.com/developers/dogstatsd/?tab=kubernetes#origin-detection-over-udp
+    if ENV.has_key?("DD_ENTITY_ID")
+      tags << "dd.internal.entity_id:#{ENV["DD_ENTITY_ID"]}"
+    end
+
     # Return nil if we have no environment variable tags. This way we don't
     # send an unnecessary '|' on the end of each stat
     return nil if tags.empty?
