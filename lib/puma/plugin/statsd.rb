@@ -102,7 +102,7 @@ Puma::Plugin.create do
     @launcher = launcher
 
     @statsd = ::StatsdConnector.new
-    @launcher.events.debug "statsd: enabled (host: #{@statsd.host})"
+    @launcher.log_writer.debug "statsd: enabled (host: #{@statsd.host})"
 
     # Fetch global metric prefix from env variable
     @metric_prefix = ENV.fetch("STATSD_METRIC_PREFIX", nil)
@@ -188,7 +188,7 @@ Puma::Plugin.create do
 
     sleep 5
     loop do
-      @launcher.events.debug "statsd: notify statsd"
+      @launcher.log_writer.debug "statsd: notify statsd"
       begin
         stats = ::PumaStats.new(Puma.stats_hash)
         @statsd.send(metric_name: prefixed_metric_name("puma.workers"), value: stats.workers, type: :gauge, tags: tags)
@@ -200,7 +200,7 @@ Puma::Plugin.create do
         @statsd.send(metric_name: prefixed_metric_name("puma.max_threads"), value: stats.max_threads, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.requests_count"), value: stats.requests_count, type: :gauge, tags: tags)
       rescue StandardError => e
-        @launcher.events.unknown_error e, nil, "! statsd: notify stats failed"
+        @launcher.log_writer.unknown_error e, nil, "! statsd: notify stats failed"
       ensure
         sleep 2
       end
