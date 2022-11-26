@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.3.0 2022-11-26
+
+* Support the origin detection over UDP from Datadog via DD_ENTITY_ID env var
+
 ## 2.2.0 2022-07-31
 
 * Support communicating with the Datadog agent via a UNIX socket (set STATSD_SOCKET_PATH env var) (PR #[38](https://github.com/yob/puma-plugin-statsd/pull/38))
