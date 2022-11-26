@@ -1,4 +1,5 @@
-# coding: utf-8, frozen_string_literal: true
+# coding: utf-8
+# frozen_string_literal: true
 require "puma"
 require "puma/plugin"
 require 'socket'
@@ -6,7 +7,7 @@ require 'socket'
 class StatsdConnector
   ENV_NAME = "STATSD_HOST"
   STATSD_TYPES = { count: 'c', gauge: 'g' }
-  METRIC_DELIMETER = ".".freeze
+  METRIC_DELIMETER = "."
 
   attr_reader :host, :port
 
