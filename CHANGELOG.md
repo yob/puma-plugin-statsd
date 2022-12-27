@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.4.0 2022-12-27
+
+* Support puma 6 (PR #[46](https://github.com/yob/puma-plugin-statsd/pull/46))
+
 ## 2.3.0 2022-11-26
 
 * Support the origin detection over UDP from Datadog via DD_ENTITY_ID env var
