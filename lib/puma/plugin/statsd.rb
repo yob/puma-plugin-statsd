@@ -3,6 +3,7 @@
 require "puma"
 require "puma/plugin"
 require 'socket'
+require 'ostruct'
 
 module PumaStatsd
   def self.config

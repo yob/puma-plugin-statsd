@@ -1,57 +1,62 @@
 PATH
   remote: .
   specs:
-    puma-plugin-statsd (0.1.6)
-      json
-      puma (>= 3.12, < 5)
+    puma-plugin-statsd (2.4.0)
+      puma (>= 5.0, < 7)
 
 GEM
-  remote: https://rubygems.org/
   remote: https://SHfFDa6-y6in3-qidhP_@gem.fury.io/everfi/
   specs:
     everfi-gemfury (0.1.0)
       gemfury
-    faraday (0.15.4)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
-    gemfury (0.10.0)
-      faraday (>= 0.9.0, < 0.16.0.pre)
+    gemfury (0.12.0)
+      faraday (>= 0.9.0, < 1.1.0.pre)
       highline (>= 1.6.0, < 2.1.0.pre)
       multi_json (~> 1.10)
       netrc (>= 0.10.0, < 0.12.0.pre)
-      thor (>= 0.14.0, < 1.0.0.pre)
+      progressbar (>= 1.10.1, < 2.0.0.pre)
+      thor (>= 0.14.0, < 1.1.0.pre)
     highline (2.0.3)
-    json (2.3.0)
-    minitest (5.13.0)
-    multi_json (1.14.1)
-    multipart-post (2.1.1)
-    mustermann (1.0.3)
+    minitest (5.17.0)
+    multi_json (1.15.0)
+    multipart-post (2.3.0)
+    mustermann (3.0.0)
+      ruby2_keywords (~> 0.0.1)
     netrc (0.11.0)
-    nio4r (2.5.2)
-    puma (4.3.1)
+    nio4r (2.5.8)
+    progressbar (1.11.0)
+    puma (6.0.2)
       nio4r (~> 2.0)
-    rack (2.0.7)
-    rack-protection (2.0.7)
+    rack (2.2.6.2)
+    rack-protection (3.0.5)
       rack
-    rake (13.0.0)
-    sinatra (2.0.7)
-      mustermann (~> 1.0)
-      rack (~> 2.0)
-      rack-protection (= 2.0.7)
+    rake (13.0.6)
+    ruby2_keywords (0.0.5)
+    sinatra (3.0.5)
+      mustermann (~> 3.0)
+      rack (~> 2.2, >= 2.2.4)
+      rack-protection (= 3.0.5)
       tilt (~> 2.0)
-    thor (0.20.3)
-    tilt (2.0.10)
+    thor (1.0.1)
+    tilt (2.0.11)
 
 PLATFORMS
-  ruby
+  arm64-darwin-21
 
 DEPENDENCIES
   bundler
   everfi-gemfury (~> 0.1)!
-  minitest (~> 5.0)
+  minitest
   puma-plugin-statsd!
   rack
   rake
   sinatra
 
 BUNDLED WITH
-   1.17.2
+   2.3.26

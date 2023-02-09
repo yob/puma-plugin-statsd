@@ -6,25 +6,25 @@ class PluginTest < Minitest::Test
   end
 
   def test_tags_empty_default
-    assert_empty plugin.send(:tags)
+    assert_nil plugin.send(:environment_variable_tags)
   end
 
   def test_tags_from_env
     ENV['MY_POD_NAME'] = 'sample_pod'
     ENV['STATSD_GROUPING'] = 'sample_grouping'
-    tags = plugin.send(:tags)
+    tags = plugin.send(:environment_variable_tags)
 
-    assert_equal 'sample_pod', tags[:pod_name]
-    assert_equal 'sample_grouping', tags[:grouping]
+    assert_includes tags, 'pod_name:sample_pod'
+    assert_includes tags, 'grouping:sample_grouping'
   end
 
   def test_tags_from_config
     PumaStatsd.config.pod_name = 'sample_pod'
     PumaStatsd.config.statsd_grouping = 'sample_grouping'
-    tags = plugin.send(:tags)
+    tags = plugin.send(:environment_variable_tags)
 
-    assert_equal 'sample_pod', tags[:pod_name]
-    assert_equal 'sample_grouping', tags[:grouping]
+    assert_includes tags, 'pod_name:sample_pod'
+    assert_includes tags, 'grouping:sample_grouping'
   end
 
   def teardown
