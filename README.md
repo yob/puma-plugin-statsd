@@ -1,5 +1,8 @@
 # Puma Statsd Plugin
 
+[puma]: https://github.com/puma/puma
+[statsd]: https://github.com/etsy/statsd
+
 EverFi fork of the puma statsd plugin. Sends key [Puma][puma] metrics to [statsd][statsd].
 
 Metrics:
@@ -35,17 +38,39 @@ end
 
 ## Usage
 
-By default the plugin assumes statsd is available at 127.0.0.1. If that's true in your environment, just start puma like normal:
+
+Add the following to your `config/puma.rb`:
+
+```ruby
+# The DD_* vars are used by the foundry-perftools
+# gem to connect to our local datadog statsd service.
+#
+# Feel free to use different vars if you want to.
+#
+# We are checking for KUBERNETES_SERVICE_HOST so this only runs
+# when deployed to our kubernetes clusters. Change this if you
+# want to run it locally.
+if ENV.fetch('KUBERNETES_SERVICE_HOST', nil) && ENV.fetch('DD_HOST', nil)
+  plugin :statsd
+
+  ::PumaStatsd.configure do |config|
+    config.pod_name = ENV.fetch('HOSTNAME')
+    # Extract deployment name from pod name
+    config.statsd_grouping = ENV.fetch('HOSTNAME').sub(/\-[a-z0-9]+\-[a-z0-9]{5}$/, '')
+    config.statsd_host = ENV.fetch('DD_HOST')
+    config.statsd_port = ENV.fetch('DD_STATSD_PORT')
+  end
+end
+```
+
+Alternatively, the plugin can be configured using optional environment variables:
 
 ```
-bundle exec puma
+STATSD_HOST=127.0.0.1 STATSD_PORT=9125 MY_POD_NAME=some-name STATSD_GROUPING=some-group bundle exec puma
 ```
 
-If statsd isn't on 127.0.0.1 or the port is non-standard, you can configure them using optional environment variables:
-
-```
-STATSD_HOST=127.0.0.1 STATSD_PORT=9125 bundle exec puma
-```
+Config set via `::PumaStatsd.configure` block takes precedence over any config ENV var passed above
+Port defaults to 8125 when no `config.statsd_port=` is set or `STATSD_GROUPING` env present
 
 ### Datadog Integration
 
@@ -67,34 +92,6 @@ and then you can filter by in the datadog interface:
 export DD_TAGS="env:test simple-tag-0 tag-key-1:tag-value-1"
 bundle exec rails server
 ```
-
-
-Add the following to your config/puma.rb:
-
-
-```ruby
-# The PERFTOOLS_DATADOG_* vars are used by the foundry-perftools
-# gem to connect to our local datadog statsd service.
-#
-# Feel free to use different vars if you want to.
-#
-# We are checking for KUBERNETES_SERVICE_HOST so this only runs
-# when deployed to our kubernetes clusters. Change this if you
-# want to run it locally.
-if ENV['KUBERNETES_SERVICE_HOST'] && ENV['PERFTOOLS_DATADOG_HOST']
-  plugin :statsd
-
-  ::PumaStatsd.configure do |config|
-    config.pod_name = ENV['HOSTNAME']
-    # Extract deployment name from pod name
-    config.statsd_grouping = ENV['HOSTNAME'].sub(/\-[a-z0-9]+\-[a-z0-9]{5}$/, '')
-
-    config.statsd_host = ENV['PERFTOOLS_DATADOG_HOST']
-    config.statsd_port = ENV['PERFTOOLS_DATADOG_PORT']
-  end
-end
-```
-
 
 ## Development
 
