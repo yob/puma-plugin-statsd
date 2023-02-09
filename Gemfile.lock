@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    puma-plugin-statsd (2.4.0)
+    puma-plugin-statsd (2.4.0.everfi.1.0.0)
       puma (>= 5.0, < 7)
 
 GEM
