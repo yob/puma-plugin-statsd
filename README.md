@@ -14,6 +14,8 @@ Metrics:
 * puma.pool_capacity - number of available threads to process requests
 * puma.max_threads - maximum number of threads that can be spawned
 * puma.percent_busy - percentage of max_threads that are currently processing requests
+* puma.old_workers
+* puma.requests_count
 
 When running puma in clustered mode, stats will be totals across all of the workers running
 
@@ -37,11 +39,10 @@ end
 ## Usage
 
 
-Add the following to your config/puma.rb:
-
+Add the following to your `config/puma.rb`:
 
 ```ruby
-# The PERFTOOLS_DATADOG_* vars are used by the foundry-perftools
+# The DD_* vars are used by the foundry-perftools
 # gem to connect to our local datadog statsd service.
 #
 # Feel free to use different vars if you want to.
@@ -49,26 +50,62 @@ Add the following to your config/puma.rb:
 # We are checking for KUBERNETES_SERVICE_HOST so this only runs
 # when deployed to our kubernetes clusters. Change this if you
 # want to run it locally.
-if ENV['KUBERNETES_SERVICE_HOST'] && ENV['PERFTOOLS_DATADOG_HOST']
+if ENV.fetch('KUBERNETES_SERVICE_HOST', nil) && ENV.fetch('DD_HOST', nil)
   plugin :statsd
 
   ::PumaStatsd.configure do |config|
-    config.pod_name = ENV['HOSTNAME']
+    config.pod_name = ENV.fetch('HOSTNAME')
     # Extract deployment name from pod name
-    config.statsd_grouping = ENV['HOSTNAME'].sub(/\-[a-z0-9]+\-[a-z0-9]{5}$/, '')
-
-    config.statsd_host = ENV['PERFTOOLS_DATADOG_HOST']
-    config.statsd_port = ENV['PERFTOOLS_DATADOG_PORT']
+    config.statsd_grouping = ENV.fetch('HOSTNAME').sub(/\-[a-z0-9]+\-[a-z0-9]{5}$/, '')
+    config.statsd_host = ENV.fetch('DD_HOST')
+    config.statsd_port = ENV.fetch('DD_STATSD_PORT')
   end
 end
 ```
 
+Alternatively, the plugin can be configured using optional environment variables:
+
+```
+STATSD_HOST=127.0.0.1 STATSD_PORT=9125 MY_POD_NAME=some-name STATSD_GROUPING=some-group bundle exec puma
+```
+
+Config set via `::PumaStatsd.configure` block takes precedence over any config ENV var passed above
+Port defaults to 8125 when no `config.statsd_port=` is set or `STATSD_GROUPING` env present
+
+### Datadog Integration
+
+metric tags are a non-standard addition to the statsd protocol, supported by
+the datadog "dogstatsd" server.
+
+Should you be reporting the puma metrics to a dogstatsd server, you can set
+tags via the following three environment variables.
+
+#### DD_TAGS
+
+`DD_TAGS`: Set this to a space-separated list of tags, using the
+[datadog agent standard format](https://docs.datadoghq.com/agent/docker/?tab=standard#global-options).
+
+For example, you could set this environment variable to set three datadog tags,
+and then you can filter by in the datadog interface:
+
+```bash
+export DD_TAGS="env:test simple-tag-0 tag-key-1:tag-value-1"
+bundle exec rails server
+```
 
 ## Development
 
-Start a pretend statsd server that listens for UDP packets on port 8125:j
+Start a pretend statsd server that listens for UDP packets on port 8125.
 
-  ruby devtools/statsd-to-stdout.rb
+If you've installed the gem in your app:
+
+    # only need to install the binstub once
+    bundle binstubs puma-plugin-statsd
+    ./bin/statsd-to-stdout
+
+If you are developing/testing this gem locally:
+
+    ./bin/statsd-to-stdout
 
 Start puma:
 

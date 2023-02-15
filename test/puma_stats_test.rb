@@ -5,18 +5,18 @@ class PumaStatsTest < MiniTest::Test
 
   let(:cluster_statistics) do
     {
-        "workers" => 2,
-        "booted_workers" => 2,
-        "worker_status" => [worker_statistics,worker_statistics].map {|w| {"last_status" => w}}
+        workers: 2,
+        booted_workers: 2,
+        worker_status: [worker_statistics,worker_statistics].map {|w| {last_status: w}}
     }
   end
 
   let(:worker_statistics) do
     {
-        "running" => 1,
-        "backlog" => 5,
-        "pool_capacity" => 2,
-        "max_threads" => 3
+        running: 1,
+        backlog: 5,
+        pool_capacity: 2,
+        max_threads: 3
     }
   end
 
@@ -69,7 +69,7 @@ class PumaStatsTest < MiniTest::Test
 
   def test_percent_busy_zero_max_threads
     ws = worker_statistics
-    ws["max_threads"] = 0
+    ws[:max_threads] = 0
     assert_equal 0, PumaStats.new(ws).percent_busy
   end
 
