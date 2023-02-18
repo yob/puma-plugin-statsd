@@ -117,8 +117,6 @@ workflows:
           filters:
             tags:
               only: /.*/
-      # - publish_gem:
-          # <<: *common_contexts
           requires:
             - test_and_build
           filters:
