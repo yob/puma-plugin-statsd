@@ -62,7 +62,7 @@ jobs:
           key: v2-gems-{{ checksum "Gemfile.lock" }}-{{ checksum "puma-plugin-statsd.gemspec" }}
 
 
-      - run: cd spec/dummy && bundle exec rake db:migrate
+      # - run: cd spec/dummy && bundle exec rake db:migrate
 
       - run:
           name: run ruby specs
