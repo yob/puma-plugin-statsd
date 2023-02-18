@@ -88,24 +88,24 @@ jobs:
           paths: pkg/*.gem
 
 
-  # publish_gem:
-  #   <<: *docker_container_ruby
-  #   steps:
-  #     - checkout
-  #     - *attach_workspace
+  publish_gem:
+    <<: *docker_container_ruby
+    steps:
+      - checkout
+      - *attach_workspace
 
-  #     - run:
-  #         command: |
-  #           GEM_VERSION=`ruby -r./lib/puma/plugin/version.rb -e "puts Puma::VERSION"`
-  #           if [ "$CIRCLE_TAG" = "v$GEM_VERSION" ]
-  #           then
-  #             curl \
-  #               -F "package=@pkg/fidoc-generator-$GEM_VERSION.gem" \
-  #               "https://$GEMFURY_PUSH_TOKEN@push.fury.io/everfi/"
-  #           else
-  #             echo "VERSION string $GEM_VERSION does not match git tag $CIRCLE_TAG"
-  #             exit 1
-  #           fi
+      # - run:
+      #     command: |
+      #       GEM_VERSION=`ruby -r./lib/puma/plugin/version.rb -e "puts Puma::VERSION"`
+      #       if [ "$CIRCLE_TAG" = "v$GEM_VERSION" ]
+      #       then
+      #         curl \
+      #           -F "package=@pkg/fidoc-generator-$GEM_VERSION.gem" \
+      #           "https://$GEMFURY_PUSH_TOKEN@push.fury.io/everfi/"
+      #       else
+      #         echo "VERSION string $GEM_VERSION does not match git tag $CIRCLE_TAG"
+      #         exit 1
+      #       fi
 
 
 workflows:
@@ -117,6 +117,8 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - publish_gem:
+          <<: *common_contexts
           requires:
             - test_and_build
           filters:
