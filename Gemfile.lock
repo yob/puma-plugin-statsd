@@ -37,6 +37,11 @@ GEM
     rack-protection (3.0.5)
       rack
     rake (13.0.6)
+    rspec-core (3.12.1)
+      rspec-support (~> 3.12.0)
+    rspec-support (3.12.0)
+    rspec_junit_formatter (0.6.0)
+      rspec-core (>= 2, < 4, != 2.12.0)
     ruby2_keywords (0.0.5)
     sinatra (3.0.5)
       mustermann (~> 3.0)
@@ -58,6 +63,7 @@ DEPENDENCIES
   puma-plugin-statsd!
   rack
   rake
+  rspec_junit_formatter
   sinatra
 
 BUNDLED WITH
