@@ -118,11 +118,11 @@ workflows:
             tags:
               only: /.*/
       # - publish_gem:
-      #     <<: *common_contexts
+          # <<: *common_contexts
           requires:
             - test_and_build
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /^v.*/              
+              only: /^v.*/             
