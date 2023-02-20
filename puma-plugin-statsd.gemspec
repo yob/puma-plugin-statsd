@@ -19,5 +19,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "sinatra"
   spec.add_development_dependency "rack"
   spec.add_development_dependency "everfi-gemfury"
-  spec.add_development_dependency "rspec_junit_formatter"
 end
