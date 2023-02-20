@@ -1,0 +1,123 @@
+references:
+  docker_auth: &docker_auth
+    auth:
+      username: $DOCKERHUB_USERNAME
+      password: $DOCKERHUB_PASSWORD
+
+  common_contexts: &common_contexts
+    context:
+      - sentry-auth-token
+      - docker-hub-creds
+      - foundry-gem
+
+  docker_container_ruby: &docker_container_ruby
+    docker:
+      - image: cimg/ruby:3.0.1-browsers
+        <<: *docker_auth
+
+    working_directory: ~/repo
+
+  restore_gem_cache: &restore_gem_cache
+    restore_cache:
+        keys:
+          - v2-gems-{{ checksum "Gemfile.lock" }}-{{ checksum "puma-plugin-statsd.gemspec" }}
+
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: ~/repo
+      
+  install_bundle: &install_bundle
+    run:
+      command: |
+        gem install bundler
+        bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+version: 2
+jobs:
+  test_and_build:
+    <<: *docker_container_ruby
+
+    steps:
+      - checkout
+      - run: sudo apt-get update && sudo apt-get install -y sqlite3 libsqlite3-dev
+      - *restore_gem_cache
+      - *install_bundle
+
+      - run:
+          name: Ensure Gemfile.lock is up to date if it is a committed file
+          command: |
+            if git diff-index --quiet HEAD -- Gemfile.lock
+            then
+              exit 0
+            else
+              echo "Please ensure that you have bundled and committed any"
+              echo "resulting changes to the Gemfile.lock file in this repo."
+              git --no-pager diff -- Gemfile.lock
+              exit 128
+            fi
+
+      - save_cache:
+          paths:
+            - ./vendor/bundle
+          key: v2-gems-{{ checksum "Gemfile.lock" }}-{{ checksum "puma-plugin-statsd.gemspec" }}
+
+      - run:
+          name: run ruby minitest 
+          command: |
+            mkdir -p /tmp/test-results/minitest
+
+            TEST_FILES="$(circleci tests glob "test/*_test.rb" | circleci tests split --split-by=timings)"
+
+            bundle exec rake test \
+              >> /tmp/test-results/minitest/results.xml \
+              $TEST_FILES
+
+      - store_test_results:
+          path: /tmp/test-results
+
+      - run: bundle exec rake build
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths: pkg/*.gem
+
+
+  publish_gem:
+    <<: *docker_container_ruby
+    steps:
+      - checkout
+      - *attach_workspace
+
+      - run:
+          command: |
+            GEM_VERSION=`ruby -r./lib/puma/plugin/version.rb -e "puts Puma::Plugin::VERSION"`
+            if [ "$CIRCLE_TAG" = "v$GEM_VERSION" ]
+            then
+              curl \
+                -F "package=@pkg/puma-plugin-statsd-$GEM_VERSION.gem" \
+                "https://$GEMFURY_PUSH_TOKEN@push.fury.io/everfi/"
+            else
+              echo "VERSION string $GEM_VERSION does not match git tag $CIRCLE_TAG"
+              exit 1
+            fi
+
+
+workflows:
+  version: 2
+  gem_test_and_release:
+    jobs:
+      - test_and_build:
+          <<: *common_contexts
+          filters:
+            tags:
+              only: /.*/
+      # - publish_gem:
+      #     <<: *common_contexts
+      #     requires:
+      #       - test_and_build
+      #     filters:
+      #       branches:
+      #         ignore: /.*/
+      #       tags:
+      #         only: /^v.*/             
+
