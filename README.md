@@ -103,10 +103,36 @@ env:
     value: deployment-foo
 ```
 
+#### Advanced configuration
+You may want to use different environment variable names, for instance if you
+happen to already provide same values with another names for another reasons,
+and want to avoid duplication. You also may want to compute some values from
+other values. Finally, you may want to enable the plugin conditionally. In any
+case, there's an interface to configure plugin from ruby. If you want to do so,
+you can add the following to your `config/puma.rb` (values are examples):
+
+```ruby
+  plugin :statsd
+
+  ::PumaStatsd.configure do |config|
+    config.pod_name = ENV.fetch('HOSTNAME')
+    # Extract deployment name from pod name
+    config.statsd_grouping = ENV.fetch('HOSTNAME').sub(/\-[a-z0-9]+\-[a-z0-9]{5}$/, '')
+    config.statsd_host = ENV.fetch('DD_HOST')
+    config.statsd_port = ENV.fetch('DD_STATSD_PORT')
+  end
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
 https://github.com/yob/puma-plugin-statsd.
+
+### Tests
+
+This gem uses MiniTest for unit testing.
+
+Run tests with `rake test`.
 
 ## Testing the data being sent to statsd
 
