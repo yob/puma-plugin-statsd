@@ -13,6 +13,7 @@ module PumaStatsd
       statsd_socket_path: ENV.fetch('STATSD_SOCKET_PATH', nil),
       pod_name: ENV.fetch('MY_POD_NAME', nil),
       statsd_grouping: ENV.fetch('STATSD_GROUPING', nil),
+      statsd_sleep_interval: ENV.fetch('STATSD_SLEEP_INTERVAL', '2'),
       metric_prefix: ENV.fetch('STATSD_METRIC_PREFIX', nil),
       dd_tags: ENV.fetch('DD_TAGS', nil),
       dd_env: ENV.fetch('DD_ENV', nil),
@@ -242,7 +243,7 @@ Puma::Plugin.create do
       rescue StandardError => e
         @log_writer.unknown_error e, nil, "! statsd: notify stats failed"
       ensure
-        sleep 2
+        sleep ::PumaStatsd.config.statsd_sleep_interval.to_f
       end
     end
   end

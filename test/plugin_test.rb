@@ -36,6 +36,7 @@ class PluginTest < Minitest::Test
         MY_POD_NAME
         STATSD_GROUPING
         STATSD_METRIC_PREFIX
+        STATSD_SLEEP_INTERVAL
         DD_TAGS
         DD_ENV
         DD_SERVICE

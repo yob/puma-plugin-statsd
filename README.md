@@ -103,6 +103,16 @@ env:
     value: deployment-foo
 ```
 
+#### STATSD_SLEEP_INTERVAL
+Stats loop by default runs every two seconds. You may want to lower that to get more fine grained sampling of the metrics or to stats be able to report quicker after an error. Sleep interval is configurable via `STATSD_SLEEP_INVERVAL` environment variable. For example:
+
+```bash
+export STATSD_SLEEP_INTERVAL='0.5'
+bundle exec rails server
+```
+
+`String#to_f` will be called on provided value.
+
 #### Advanced configuration
 You may want to use different environment variable names, for instance if you
 happen to already provide same values with another names for another reasons,
