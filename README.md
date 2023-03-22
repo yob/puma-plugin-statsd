@@ -143,8 +143,10 @@ By default, the following metrics is gathered:
 * `backlog`
 * `max_threads`
 * `requests_count`
+* `percent_busy` -- how much of the pool capacity is taken already
 
-All is collected with `:gauge` type. Via advanced configuration you can change it like this:
+All is collected with `:gauge` type, except `:percent_busy`, which is collected
+with `:histogram` type. Via advanced configuration you can change it like this:
 
 ```ruby
   ::PumaStatsd.configure do |config|

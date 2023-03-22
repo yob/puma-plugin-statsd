@@ -27,7 +27,8 @@ module PumaStatsd
         running: :gauge,
         backlog: :gauge,
         max_threads: :gauge,
-        requests_count: :gauge
+        requests_count: :gauge,
+        percent_busy: :histogram
       }
     })
   end
@@ -137,6 +138,11 @@ class PumaStats
     else
       @stats.fetch(:requests_count, 0)
     end
+  end
+
+  def percent_busy
+    return 0 if max_threads == 0
+    ((1.0 - pool_capacity.to_f/max_threads.to_f)*100).round
   end
 end
 
