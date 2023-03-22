@@ -19,7 +19,16 @@ module PumaStatsd
       dd_env: ENV.fetch('DD_ENV', nil),
       dd_service: ENV.fetch('DD_SERVICE', nil),
       dd_version: ENV.fetch('DD_VERSION', nil),
-      dd_entity_id: ENV.fetch('DD_ENTITY_ID', nil)
+      dd_entity_id: ENV.fetch('DD_ENTITY_ID', nil),
+      metrics: {
+        workers: :gauge,
+        booted_workers: :gauge,
+        old_workers: :gauge,
+        running: :gauge,
+        backlog: :gauge,
+        max_threads: :gauge,
+        requests_count: :gauge
+      }
     })
   end
 
@@ -34,7 +43,7 @@ end
 
 class StatsdConnector
   ENV_NAME = 'STATSD_HOST'
-  STATSD_TYPES = { count: 'c', gauge: 'g' }
+  STATSD_TYPES = { count: 'c', gauge: 'g', histogram: 'h' }
   METRIC_DELIMETER = '.'
 
   attr_reader :host, :port
@@ -232,14 +241,9 @@ Puma::Plugin.create do
       @log_writer.debug "statsd: notify statsd"
       begin
         stats = ::PumaStats.new(Puma.stats_hash)
-        @statsd.send(metric_name: prefixed_metric_name('puma.workers'), value: stats.workers, type: :gauge, tags: tags)
-        @statsd.send(metric_name: prefixed_metric_name('puma.booted_workers'), value: stats.booted_workers, type: :gauge, tags: tags)
-        @statsd.send(metric_name: prefixed_metric_name('puma.old_workers'), value: stats.old_workers, type: :gauge, tags: tags)
-        @statsd.send(metric_name: prefixed_metric_name('puma.running'), value: stats.running, type: :gauge, tags: tags)
-        @statsd.send(metric_name: prefixed_metric_name('puma.backlog'), value: stats.backlog, type: :gauge, tags: tags)
-        @statsd.send(metric_name: prefixed_metric_name('puma.pool_capacity'), value: stats.pool_capacity, type: :gauge, tags: tags)
-        @statsd.send(metric_name: prefixed_metric_name('puma.max_threads'), value: stats.max_threads, type: :gauge, tags: tags)
-        @statsd.send(metric_name: prefixed_metric_name('puma.requests_count'), value: stats.requests_count, type: :gauge, tags: tags)
+        PumaStatsd.config.metrics.each do |metric, type|
+          @statsd.send(metric_name: prefixed_metric_name("puma.#{metric}"), value: stats.public_send(metric), type: type, tags: tags)
+        end
       rescue StandardError => e
         @log_writer.unknown_error e, nil, "! statsd: notify stats failed"
       ensure

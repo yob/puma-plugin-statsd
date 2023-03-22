@@ -133,6 +133,29 @@ you can add the following to your `config/puma.rb` (values are examples):
   end
 ```
 
+#### Configure metric types
+By default, the following metrics is gathered: 
+
+* `workers`
+* `booted_workers`
+* `old_workers`
+* `running`
+* `backlog`
+* `max_threads`
+* `requests_count`
+
+All is collected with `:gauge` type. Via advanced configuration you can change it like this:
+
+```ruby
+  ::PumaStatsd.configure do |config|
+    config.metrics[:backlog] = :histogram # :count, :gauge and :histogram is supported
+    config.metrics.delete(:old_workers)
+  end
+```
+
+Stats is calculated as a method called on `PumaStatsd::PumaStats` instance. See
+source code for more details.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
