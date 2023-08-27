@@ -91,12 +91,14 @@ class PumaStats
 
   def requests_count
     if clustered?
-      count = @stats[:worker_status].map { |s| s[:last_status].fetch(:requests_count, 0) }.inject(0, &:+)
+      @stats[:worker_status].map { |s| s[:last_status].fetch(:requests_count, 0) }.inject(0, &:+)
     else
-      count = @stats.fetch(:requests_count, 0)
+      @stats.fetch(:requests_count, 0)
     end
+  end
 
-    return count - @previous_requests_count
+  def requests_delta
+    requests_count - @previous_requests_count
   end
 end
 
@@ -203,7 +205,7 @@ Puma::Plugin.create do
       @log_writer.debug "statsd: notify statsd"
       begin
         stats = ::PumaStats.new(Puma.stats_hash, previous_requests_count)
-        previous_requests_count += stats.requests_count
+        previous_requests_count = stats.requests_count
         @statsd.send(metric_name: prefixed_metric_name("puma.workers"), value: stats.workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.booted_workers"), value: stats.booted_workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.old_workers"), value: stats.old_workers, type: :gauge, tags: tags)
@@ -211,7 +213,8 @@ Puma::Plugin.create do
         @statsd.send(metric_name: prefixed_metric_name("puma.backlog"), value: stats.backlog, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.pool_capacity"), value: stats.pool_capacity, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.max_threads"), value: stats.max_threads, type: :gauge, tags: tags)
-        @statsd.send(metric_name: prefixed_metric_name("puma.requests_count"), value: stats.requests_count, type: :count, tags: tags)
+        @statsd.send(metric_name: prefixed_metric_name("puma.requests_count"), value: stats.requests_count, type: :gauge, tags: tags)
+        @statsd.send(metric_name: prefixed_metric_name("puma.requests"), value: stats.requests_delta, type: :count, tags: tags)
       rescue StandardError => e
         @log_writer.unknown_error e, nil, "! statsd: notify stats failed"
       ensure
