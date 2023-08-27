@@ -12,7 +12,7 @@
 
 ## 2.3.0 2022-11-26
 
-* Support the origin detection over UDP from Datadog via DD_ENTITY_ID env var
+* Support the origin detection over UDP from Datadog via DD_ENTITY_ID env var (PR #[42](https://github.com/yob/puma-plugin-statsd/pull/42))
 
 ## 2.2.0 2022-07-31
 
