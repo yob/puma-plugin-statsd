@@ -109,7 +109,7 @@ Puma::Plugin.create do
       end
 
     @statsd = ::StatsdConnector.new
-    @interval = ENV.fetch("STATSD_SLEEP_INTERNAL", "2").to_f
+    @interval_seconds = ENV.fetch("STATSD_INTERVAL_SECONDS", "2").to_f
     @log_writer.debug "statsd: enabled (host: #{@statsd.host}, interval: #{@interval})"
 
     # Fetch global metric prefix from env variable
@@ -210,7 +210,7 @@ Puma::Plugin.create do
       rescue StandardError => e
         @log_writer.unknown_error e, nil, "! statsd: notify stats failed"
       ensure
-        sleep @interval
+        sleep @interval_seconds
       end
     end
   end
