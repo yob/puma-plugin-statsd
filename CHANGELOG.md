@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 2.5.0 2023-08-27
+
+* Support adjusting the default reporting interval of 2s (set STATSD_INTERVAL_SECONDS env var)  (PR #[54](https://github.com/yob/puma-plugin-statsd/pull/54))
+* New metric: `puma.requests` - the number of requests served since the last report (PR #[55](https://github.com/yob/puma-plugin-statsd/pull/55))
+* Improved documentation in the README
+
 ## 2.4.0 2022-12-27
 
 * Support puma 6 (PR #[46](https://github.com/yob/puma-plugin-statsd/pull/46))
