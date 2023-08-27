@@ -36,8 +36,9 @@ end
 
 # Wrap puma's stats in a safe API
 class PumaStats
-  def initialize(stats)
+  def initialize(stats, previous_requests_count = 0)
     @stats = stats
+    @previous_requests_count = previous_requests_count
   end
 
   def clustered?
@@ -94,6 +95,10 @@ class PumaStats
     else
       @stats.fetch(:requests_count, 0)
     end
+  end
+
+  def requests_delta
+    requests_count - @previous_requests_count
   end
 end
 
@@ -193,12 +198,14 @@ Puma::Plugin.create do
   # Send data to statsd every few seconds
   def stats_loop
     tags = environment_variable_tags
+    previous_requests_count = 0
 
     sleep 5
     loop do
       @log_writer.debug "statsd: notify statsd"
       begin
-        stats = ::PumaStats.new(Puma.stats_hash)
+        stats = ::PumaStats.new(Puma.stats_hash, previous_requests_count)
+        previous_requests_count = stats.requests_count
         @statsd.send(metric_name: prefixed_metric_name("puma.workers"), value: stats.workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.booted_workers"), value: stats.booted_workers, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.old_workers"), value: stats.old_workers, type: :gauge, tags: tags)
@@ -207,6 +214,7 @@ Puma::Plugin.create do
         @statsd.send(metric_name: prefixed_metric_name("puma.pool_capacity"), value: stats.pool_capacity, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.max_threads"), value: stats.max_threads, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.requests_count"), value: stats.requests_count, type: :gauge, tags: tags)
+        @statsd.send(metric_name: prefixed_metric_name("puma.requests"), value: stats.requests_delta, type: :count, tags: tags)
       rescue StandardError => e
         @log_writer.unknown_error e, nil, "! statsd: notify stats failed"
       ensure

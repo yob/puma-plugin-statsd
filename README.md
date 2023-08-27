@@ -3,6 +3,8 @@
 [Puma][puma] integration with [statsd][statsd] for easy tracking of key metrics
 that puma can provide:
 
+Gauges:
+
 * puma.workers
 * puma.booted_workers
 * puma.running
@@ -10,7 +12,11 @@ that puma can provide:
 * puma.pool_capacity
 * puma.max_threads
 * puma.old_workers
-* puma.requests_count
+* puma.requests_count - Total number of requests served by this puma since it started
+
+Counters:
+
+* puma.requests - The number of requests served since the previous report
 
   [puma]: https://github.com/puma/puma
   [statsd]: https://github.com/etsy/statsd
