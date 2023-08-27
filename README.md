@@ -43,30 +43,53 @@ threads 8, 16
 plugin :statsd
 ```
 
-## Usage
+## Configuration
 
-By default the plugin assumes statsd is available at 127.0.0.1. If that's true in your environment, just start puma like normal:
+### Statsd Connection
+
+By default the plugin assumes statsd is available at 127.0.0.1. If that's true
+in your environment, just start puma like normal:
 
 ```
 bundle exec puma
 ```
 
-If statsd isn't on 127.0.0.1 or the port is non-standard, you can configure them using optional environment variables:
+If statsd isn't on 127.0.0.1 or the UDP port is non-standard, you can configure
+them using optional environment variables:
 
 ```
 STATSD_HOST=127.0.0.1 STATSD_PORT=9125 bundle exec puma
 ```
 
-### Configuration
+Some setups have statsd listening on a Unix socket rather than UDP. In that case, specify the socket path:
+
+```
+STATSD_SOCKET_PATH=/tmp/statsd.socket bundle exec puma
+```
+
+### Interval
 
 By default values will be reported to statsd every 2 seconds. To customise that
 internal, set the `STATSD_INTERVAL_SECONDS` environment variable.
 
+```
 STATSD_INTERVAL_SECONDS=1 bundle exec puma
+```
 
 Fractional seconds are supported. Here's how you'd opt into 500ms:
 
+```
 STATSD_INTERVAL_SECONDS="0.5" bundle exec puma
+```
+
+### Prefix
+
+In some environments you may want to prefix the metric names. To report
+`foo.puma.pool_capacity` instead of `puma.pool_capacity`:
+
+```
+STATSD_METRIC_PREFIX=foo bundle exec puma
+```
 
 ### Datadog Integration
 
@@ -74,7 +97,7 @@ metric tags are a non-standard addition to the statsd protocol, supported by
 the datadog "dogstatsd" server.
 
 Should you be reporting the puma metrics to a dogstatsd server, you can set
-tags via the following three environment variables.
+tags via the following environment variables.
 
 #### DD_TAGS
 
@@ -84,10 +107,16 @@ tags via the following three environment variables.
 For example, you could set this environment variable to set three datadog tags,
 and then you can filter by in the datadog interface:
 
-```bash
-export DD_TAGS="env:test simple-tag-0 tag-key-1:tag-value-1"
-bundle exec rails server
 ```
+DD_TAGS="env:test simple-tag-0 tag-key-1:tag-value-1" bundle exec puma
+```
+
+#### DD_ENV, DD_SERVICE, DD_VERSION, DD_ENTITY_ID
+
+The `env`, `service`, `version` and `dd.internal.entity_id` tags have special
+meaning to datadog, and they can be set using the above environment variables.
+These are the conventional environment variables recommended by datadog, so
+they're likely to be set in many deployments.
 
 #### MY_POD_NAME
 
