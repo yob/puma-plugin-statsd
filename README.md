@@ -51,6 +51,17 @@ If statsd isn't on 127.0.0.1 or the port is non-standard, you can configure them
 STATSD_HOST=127.0.0.1 STATSD_PORT=9125 bundle exec puma
 ```
 
+### Configuration
+
+By default values will be reported to statsd every 2 seconds. To customise that
+internal, set the `STATSD_INTERVAL_SECONDS` environment variable.
+
+STATSD_INTERVAL_SECONDS=1 bundle exec puma
+
+Fractional seconds are supported. Here's how you'd opt into 500ms:
+
+STATSD_INTERVAL_SECONDS="0.5" bundle exec puma
+
 ### Datadog Integration
 
 metric tags are a non-standard addition to the statsd protocol, supported by
