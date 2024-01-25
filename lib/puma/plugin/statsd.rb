@@ -26,7 +26,8 @@ class StatsdConnector
       socket.connect(Socket.pack_sockaddr_un(@socket_path))
       socket.sendmsg_nonblock(data)
     else
-      socket = UDPSocket.new
+      address_family, _, _ = Socket.getaddrinfo(host, port)[0]
+      socket = UDPSocket.new(Socket.const_get(address_family))
       socket.send(data, 0, host, port)
     end
   ensure
