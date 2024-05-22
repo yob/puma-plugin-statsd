@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.6.0 2023-12-11
+
+* New metric: `puma.percent_busy` - The percentage of busy threads calculated as pool capacity relative to max threads (PR #[58](https://github.com/yob/puma-plugin-statsd/pull/58))
+
 ## 2.5.0 2023-08-27
 
 * Support adjusting the default reporting interval of 2s (set STATSD_INTERVAL_SECONDS env var)  (PR #[54](https://github.com/yob/puma-plugin-statsd/pull/54))
@@ -12,7 +16,7 @@
 
 ## 2.3.0 2022-11-26
 
-* Support the origin detection over UDP from Datadog via DD_ENTITY_ID env var
+* Support the origin detection over UDP from Datadog via DD_ENTITY_ID env var (PR #[42](https://github.com/yob/puma-plugin-statsd/pull/42))
 
 ## 2.2.0 2022-07-31
 

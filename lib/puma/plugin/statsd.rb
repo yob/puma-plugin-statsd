@@ -98,6 +98,10 @@ class PumaStats
     end
   end
 
+  def percent_busy
+    (1 - (pool_capacity / max_threads.to_f)) * 100
+  end
+
   def requests_delta
     requests_count - @previous_requests_count
   end
@@ -214,6 +218,7 @@ Puma::Plugin.create do
         @statsd.send(metric_name: prefixed_metric_name("puma.backlog"), value: stats.backlog, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.pool_capacity"), value: stats.pool_capacity, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.max_threads"), value: stats.max_threads, type: :gauge, tags: tags)
+        @statsd.send(metric_name: prefixed_metric_name("puma.percent_busy"), value: stats.percent_busy, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.requests_count"), value: stats.requests_count, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.requests"), value: stats.requests_delta, type: :count, tags: tags)
       rescue StandardError => e
