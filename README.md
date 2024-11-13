@@ -5,14 +5,14 @@ that puma can provide:
 
 Gauges:
 
-* puma.workers - The number of distinct process running. In single mode this will be 1, in cluster mode the number of worker processes
+* puma.workers - The number of distinct processes running. In single mode this will be 1, in cluster mode the number of worker processes
 * puma.old_workers - The number of worker processes that are about to be shut down as part of a phased restart. Will normally be 0
 * puma.booted_workers - The number of worker processes that are in a booted state
-* puma.running - The number of worker threads currently running. In quiet times, idle threads may be shutdown, but they'll start back up again when traffic arrives
-* puma.backlog - The number of requests that have made it to a worker but are yet to be processed. This will normally be zero, as requests queue on the tcp/unix socket in front of the master puma process, not in the worker thread pool
-* puma.pool_capacity - The number of idle and unused worker threads. When this is low/zero, puma is running at full capacity and might need scaling up
+* puma.running - The number of worker threads currently running. In quiet times, idle threads may be shutdown if the number of threads exceeds the configured minimum, but they'll start back up again when traffic arrives
+* puma.backlog - The number of requests that have made it to a worker but are yet to be processed. This will be zero if queue_requests is disabled, as requests will only queue on the tcp/unix socket in front of the master puma process, but not in the worker thread pool
+* puma.pool_capacity - The number of idle and unspawned worker threads. When this is low/zero, puma is running at full capacity and might need scaling up
 * puma.max_threads - The maximum number of worker threads that might run at one time
-* puma.percent_busy - The percentage of busy threads calculated as pool capacity relative to max threads
+* puma.percent_busy - The percentage of busy threads, calculated as the percentage of capacity in use relative to the maximum number of threads
 * puma.requests_count - Total number of requests served by this puma since it started
 
 Counters:
