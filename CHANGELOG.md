@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.7.0 2025-10-26
+
+* Support puma 7 (PR #[65](https://github.com/yob/puma-plugin-statsd/pull/65))
+
 ## 2.6.0 2023-12-11
 
 * New metric: `puma.percent_busy` - The percentage of busy threads calculated as pool capacity relative to max threads (PR #[58](https://github.com/yob/puma-plugin-statsd/pull/58))
