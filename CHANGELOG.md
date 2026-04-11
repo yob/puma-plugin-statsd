@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.8.0 XXX
+
+* Support puma 8 (PR #[66](https://github.com/yob/puma-plugin-statsd/pull/66))
+
 ## 2.7.0 2025-10-26
 
 * Support puma 7 (PR #[65](https://github.com/yob/puma-plugin-statsd/pull/65))
