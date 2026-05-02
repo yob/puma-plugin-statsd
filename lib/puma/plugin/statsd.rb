@@ -59,7 +59,7 @@ class PumaStats
 
   def running
     if clustered?
-      @stats[:worker_status].map { |s| s[:last_status].fetch(:running, 0) }.inject(0, &:+)
+      @stats[:worker_status].sum(0) { |s| s[:last_status].fetch(:running, 0) }
     else
       @stats.fetch(:running, 0)
     end
@@ -67,7 +67,7 @@ class PumaStats
 
   def backlog
     if clustered?
-      @stats[:worker_status].map { |s| s[:last_status].fetch(:backlog, 0) }.inject(0, &:+)
+      @stats[:worker_status].sum(0) { |s| s[:last_status].fetch(:backlog, 0) }
     else
       @stats.fetch(:backlog, 0)
     end
@@ -75,7 +75,7 @@ class PumaStats
 
   def pool_capacity
     if clustered?
-      @stats[:worker_status].map { |s| s[:last_status].fetch(:pool_capacity, 0) }.inject(0, &:+)
+      @stats[:worker_status].sum(0) { |s| s[:last_status].fetch(:pool_capacity, 0) }
     else
       @stats.fetch(:pool_capacity, 0)
     end
@@ -83,7 +83,7 @@ class PumaStats
 
   def max_threads
     if clustered?
-      @stats[:worker_status].map { |s| s[:last_status].fetch(:max_threads, 0) }.inject(0, &:+)
+      @stats[:worker_status].sum(0) { |s| s[:last_status].fetch(:max_threads, 0) }
     else
       @stats.fetch(:max_threads, 0)
     end
@@ -91,7 +91,7 @@ class PumaStats
 
   def requests_count
     if clustered?
-      @stats[:worker_status].map { |s| s[:last_status].fetch(:requests_count, 0) }.inject(0, &:+)
+      @stats[:worker_status].sum(0) { |s| s[:last_status].fetch(:requests_count, 0) }
     else
       @stats.fetch(:requests_count, 0)
     end
