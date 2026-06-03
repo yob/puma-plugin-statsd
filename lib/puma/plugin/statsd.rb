@@ -89,6 +89,14 @@ class PumaStats
     end
   end
 
+  def io_threads
+    if clustered?
+      @stats[:worker_status].map { |s| s[:last_status].fetch(:io_threads, 0) }.inject(0, &:+)
+    else
+      @stats.fetch(:io_threads, 0)
+    end
+  end
+
   def requests_count
     if clustered?
       @stats[:worker_status].map { |s| s[:last_status].fetch(:requests_count, 0) }.inject(0, &:+)
@@ -217,6 +225,7 @@ Puma::Plugin.create do
         @statsd.send(metric_name: prefixed_metric_name("puma.backlog"), value: stats.backlog, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.pool_capacity"), value: stats.pool_capacity, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.max_threads"), value: stats.max_threads, type: :gauge, tags: tags)
+        @statsd.send(metric_name: prefixed_metric_name("puma.io_threads"), value: stats.io_threads, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.percent_busy"), value: stats.percent_busy, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.requests_count"), value: stats.requests_count, type: :gauge, tags: tags)
         @statsd.send(metric_name: prefixed_metric_name("puma.requests"), value: stats.requests_delta, type: :count, tags: tags)
