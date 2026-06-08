@@ -12,6 +12,7 @@ Gauges:
 * puma.backlog - The number of requests that have made it to a worker but are yet to be processed. This will be zero if queue_requests is disabled, as requests will only queue on the tcp/unix socket in front of the master puma process, but not in the worker thread pool
 * puma.pool_capacity - The number of idle and unspawned worker threads. When this is low/zero, puma is running at full capacity and might need scaling up
 * puma.max_threads - The maximum number of worker threads that might run at one time
+* puma.io_threads - The number of worker threads currently marked as IO-bound.
 * puma.percent_busy - The percentage of busy threads, calculated as the percentage of capacity in use relative to the maximum number of threads
 * puma.requests_count - Total number of requests served by this puma since it started
 
